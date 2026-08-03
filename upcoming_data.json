@@ -1,258 +1,167 @@
 {
-  "updatedAt": "2026-08-03T07:48:27.578428+00:00",
+  "updatedAt": "2026-08-03T08:30:21.685239+00:00",
   "upcomingWithDate": [
     {
-      "title": "Corsair Cove",
-      "exactDate": "2026-07-31"
-    },
-    {
       "title": "Beast of Reincarnation",
-      "exactDate": "2026-08-04"
+      "approxLabel": "August 4, 2026 ( source )"
     },
     {
-      "title": "Monsters are Coming!",
-      "exactDate": "2026-08-06"
+      "title": "Monsters are Coming! (console)",
+      "approxLabel": "August 6, 2026 ( source )"
     },
     {
       "title": "Sandustry",
-      "exactDate": "2026-08-13"
+      "approxLabel": "August 13, 2026 ( source )"
     },
     {
       "title": "Grave Seasons",
-      "exactDate": "2026-08-15"
+      "approxLabel": "August 15, 2026 ( source )"
     },
     {
       "title": "Resonance: A Plague Tale Legacy",
-      "exactDate": "2026-08-27"
+      "approxLabel": "August 27, 2026 ( source )"
     },
     {
       "title": "Screenbound",
-      "exactDate": "2026-09-10"
+      "approxLabel": "September 10, 2026 ( source )"
     },
     {
       "title": "Dune: Awakening",
-      "exactDate": "2026-09-22"
+      "approxLabel": "September 22, 2026 ( source )"
     },
     {
       "title": "Valor Mortis",
-      "exactDate": "2026-09-24"
+      "approxLabel": "September 24, 2026 ( source )"
     },
     {
       "title": "Minecraft Dungeons II",
-      "exactDate": "2026-09-29"
-    },
-    {
-      "title": "Gears of War: E-Day",
-      "exactDate": "2026-10-06"
-    },
-    {
-      "title": "Forever Ago",
-      "exactDate": "2026-10-08"
-    },
-    {
-      "title": "Stranger Than Heaven",
-      "exactDate": "2027-01-15"
-    },
-    {
-      "title": "Persona 4 Revival",
-      "exactDate": "2027-02-18"
-    },
-    {
-      "title": "Fable",
-      "exactDate": "2027-02-23"
-    },
-    {
-      "title": "Speedrunners 2: King of Speed",
-      "approxLabel": "Luglio 2026"
-    },
-    {
-      "title": "Vapor World: Over the Mind",
-      "approxLabel": "Q3 2026"
+      "approxLabel": "September 29, 2026 ( source )"
     },
     {
       "title": "Escape Academy 2: Back 2 School",
-      "approxLabel": "Settembre 2026"
+      "approxLabel": "September 2026 ( source )"
+    },
+    {
+      "title": "Vapor World: Over the Mind",
+      "approxLabel": "Q3, 2026 ( source )"
+    },
+    {
+      "title": "Gears of War E",
+      "approxLabel": "Day – October 6, 2026 ( source )"
+    },
+    {
+      "title": "Echo Weaver",
+      "approxLabel": "October 8, 2026 ( source )"
+    },
+    {
+      "title": "Forever Ago",
+      "approxLabel": "October 8, 2026 ( source )"
     },
     {
       "title": "Freestyle Football 2",
-      "approxLabel": "Q4 2026"
+      "approxLabel": "Q4 2026 ( source)"
     },
     {
       "title": "Mariachi Legends",
-      "approxLabel": "Q4 2026"
+      "approxLabel": "Q4 2026 ( source )"
     },
     {
       "title": "There Are No Ghosts At The Grand",
-      "approxLabel": "Q4 2026"
-    },
-    {
-      "title": "JOIN US",
-      "approxLabel": "Marzo 2027"
-    },
-    {
-      "title": "The Expanse: Osiris Reborn",
-      "approxLabel": "Primavera 2027"
-    },
-    {
-      "title": "Spyro: A Realm Beyond",
-      "approxLabel": "Primavera 2027"
-    },
-    {
-      "title": "Wo Long 2: Wings of Ember",
-      "approxLabel": "Inizio 2027"
+      "approxLabel": "Q4, 2026 ( source )"
     },
     {
       "title": "Armatus",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
-      "title": "At Fate's End",
-      "approxLabel": "2026"
+      "title": "At Fate’s End",
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Awaysis",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Bluey's Happy Snaps",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
-      "title": "DayZ: Badlands (espansione)",
-      "approxLabel": "2026"
+      "title": "DayZ Badlands expansion",
+      "approxLabel": "2026 ( source )"
     },
     {
-      "title": "Deep Dish Dungeon",
-      "approxLabel": "2026"
+      "title": "Deep Dish Dungeon",
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Erosion",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Tanuki Pon's Summer",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source , source )"
     },
     {
       "title": "The Eternal Life of Goldman",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Tropico 7",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Vaunted",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Wildekin",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
       "title": "Witchbrook",
-      "approxLabel": "2026"
+      "approxLabel": "2026 ( source )"
     },
     {
-      "title": "Alien Deathstorm",
-      "approxLabel": "2027"
+      "title": "Bushiden",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Bad Magpie",
-      "approxLabel": "2027"
+      "title": "Crowsworn",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Clockwork Revolution",
-      "approxLabel": "2027"
+      "title": "Darkwood II",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Magician: The Devil's Deal",
-      "approxLabel": "2027"
+      "title": "Harmonium the Musical",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Moosa: Dirty Fate",
-      "approxLabel": "2027"
+      "title": "Nirvana Noir",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Senua",
-      "approxLabel": "2027"
+      "title": "Persona 6",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "State of Decay 3",
-      "approxLabel": "2027"
+      "title": "Raji: Kaliyuga",
+      "approxLabel": "TBC ( source )"
     },
     {
-      "title": "Vivarium",
-      "approxLabel": "2027"
+      "title": "She Dreams Elsewhere",
+      "approxLabel": "TBC ( source )"
+    },
+    {
+      "title": "Sleight of Hand",
+      "approxLabel": "TBC ( source , source )"
+    },
+    {
+      "title": "Way to the Woods",
+      "approxLabel": "TBC ( source )"
     }
   ],
-  "upcomingAnnounced": [
-    {
-      "title": "Bushiden"
-    },
-    {
-      "title": "Crowsworn"
-    },
-    {
-      "title": "Darkwood II"
-    },
-    {
-      "title": "Echo Weaver"
-    },
-    {
-      "title": "Harmonium the Musical"
-    },
-    {
-      "title": "Nirvana Noir"
-    },
-    {
-      "title": "Persona 6"
-    },
-    {
-      "title": "Raji: Kaliyuga"
-    },
-    {
-      "title": "She Dreams Elsewhere"
-    },
-    {
-      "title": "Sleight of Hand"
-    },
-    {
-      "title": "Way to the Woods"
-    }
-  ],
-  "leavingSoon": [
-    {
-      "title": "Celeste",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Mount & Blade II: Bannerlord",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Crusader Kings III",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Sniper Elite: Resistance",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Rain World",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Back to the Dawn",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "My Friendly Neighborhood",
-      "exactDate": "2026-07-31"
-    },
-    {
-      "title": "Whiskerwood (Game Preview)",
-      "exactDate": "2026-07-31"
-    }
-  ]
+  "upcomingAnnounced": [],
+  "leavingSoon": []
 }
