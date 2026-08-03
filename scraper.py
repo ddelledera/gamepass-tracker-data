@@ -51,32 +51,29 @@ def parse_date(text: str):
     return None
 
 
+def clean_date_text(text: str) -> str:
+    """Rimuove annotazioni tipo '( source )' o '( source, source )'."""
+    text = re.sub(r"\(\s*source\s*(,\s*source\s*)*\)", "", text, flags=re.IGNORECASE)
+    return text.strip(" -–—\t")
+
+
 def scrape_coming_and_announced():
     """
-    Analizza la pagina "lista completa" di gg.deals, dividendo i giochi
-    in due gruppi: con data (anche approssimativa) e annunciati senza data.
+    Analizza la pagina "lista completa" di gg.deals. È UNA lista unica per
+    sezione, dove ogni riga è "Titolo - Data" e i giochi senza data
+    confermata hanno semplicemente "TBC" al posto della data.
     """
     soup = fetch_soup(COMING_URL)
 
     with_date = []
     announced = []
+    seen_titles = set()
 
-    # La pagina è organizzata in blocchi con intestazioni (h2/h3) e liste
-    # puntate sotto ciascuna. Cerchiamo le liste vicine alle intestazioni
-    # che parlano di "coming" (con data) e "announced"/"TBC" (senza data).
     for heading in soup.find_all(re.compile("^h[1-4]$")):
         heading_text = heading.get_text(strip=True).lower()
-
-        is_announced_section = "announced" in heading_text or "tbc" in heading_text
-        is_coming_section = (
-            "coming" in heading_text
-            and "announced" not in heading_text
-        )
-
-        if not (is_announced_section or is_coming_section):
+        if "coming" not in heading_text and "announced" not in heading_text:
             continue
 
-        # Cerchiamo la prima lista (ul) subito dopo questa intestazione.
         sibling = heading.find_next_sibling()
         steps = 0
         while sibling is not None and sibling.name != "ul" and steps < 6:
@@ -91,32 +88,33 @@ def scrape_coming_and_announced():
             if not raw_text:
                 continue
 
-            if is_announced_section:
-                # Niente data: solo il titolo del gioco.
-                title = re.split(r"[-–—]", raw_text)[0].strip()
-                if title:
-                    announced.append({"title": title})
+            # Separatore Titolo/Data: un trattino CIRCONDATO DA SPAZI, per
+            # non spezzare titoli che contengono trattini (es. "E-Day").
+            parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
+            title = parts[0].strip()
+            date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
+
+            if not title or title in seen_titles:
+                continue
+            seen_titles.add(title)
+
+            if not date_text or date_text.upper() == "TBC":
+                announced.append({"title": title})
+                continue
+
+            parsed = parse_date(date_text)
+            if parsed:
+                with_date.append({
+                    "title": title,
+                    "exactDate": parsed.strftime("%Y-%m-%d"),
+                })
             else:
-                # Proviamo a separare "Titolo - Data" (formati comuni).
-                parts = re.split(r"[-–—]\s*", raw_text, maxsplit=1)
-                title = parts[0].strip()
-                date_text = parts[1].strip() if len(parts) > 1 else ""
+                with_date.append({
+                    "title": title,
+                    "approxLabel": date_text,
+                })
 
-                if not title:
-                    continue
-
-                parsed = parse_date(date_text) if date_text else None
-                if parsed:
-                    with_date.append({
-                        "title": title,
-                        "exactDate": parsed.strftime("%Y-%m-%d"),
-                    })
-                else:
-                    with_date.append({
-                        "title": title,
-                        "approxLabel": date_text or "TBC",
-                    })
-
+    print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
 
 
@@ -128,30 +126,31 @@ def scrape_leaving_soon():
     """
     index_soup = fetch_soup(LEAVING_INDEX_URL)
 
-    # Cerchiamo il primo link che sembra un articolo (non un link di menu).
-    article_link = None
+    candidate_links = []
     for a in index_soup.find_all("a", href=True):
         href = a["href"]
-        if "/subscription-news/" in href and href.count("/") >= 4:
-            article_link = href
-            break
+        if "/subscription-news/" in href and "leav" in href.lower():
+            candidate_links.append(href)
 
-    if article_link is None:
+    print(f"[leaving] Trovati {len(candidate_links)} link candidati.")
+    if not candidate_links:
         return []
 
+    article_link = candidate_links[0]
     if article_link.startswith("/"):
         article_link = "https://gg.deals" + article_link
+    print(f"[leaving] Uso l'articolo: {article_link}")
 
     article_soup = fetch_soup(article_link)
 
     leaving = []
     for li in article_soup.find_all("li"):
         text = li.get_text(" ", strip=True)
-        # Filtriamo righe troppo corte/lunghe per essere un nome di gioco.
         if 2 <= len(text) <= 80 and not text.lower().startswith("regular price"):
             leaving.append({"title": text})
 
-    # Rimuoviamo eventuali doppioni mantenendo l'ordine.
+    print(f"[leaving] Righe <li> candidate trovate: {len(leaving)}")
+
     seen = set()
     unique_leaving = []
     for game in leaving:
