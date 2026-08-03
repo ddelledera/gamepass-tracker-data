@@ -1,219 +1,40 @@
-{
-  "updatedAt": "2026-08-03T08:40:24.160928+00:00",
-  "upcomingWithDate": [
-    {
-      "title": "Beast of Reincarnation",
-      "exactDate": "2026-08-04"
-    },
-    {
-      "title": "Monsters are Coming! (console)",
-      "exactDate": "2026-08-06"
-    },
-    {
-      "title": "Sandustry",
-      "exactDate": "2026-08-13"
-    },
-    {
-      "title": "Grave Seasons",
-      "exactDate": "2026-08-15"
-    },
-    {
-      "title": "Resonance: A Plague Tale Legacy",
-      "exactDate": "2026-08-27"
-    },
-    {
-      "title": "Screenbound",
-      "exactDate": "2026-09-10"
-    },
-    {
-      "title": "Dune: Awakening",
-      "exactDate": "2026-09-22"
-    },
-    {
-      "title": "Valor Mortis",
-      "exactDate": "2026-09-24"
-    },
-    {
-      "title": "Minecraft Dungeons II",
-      "exactDate": "2026-09-29"
-    },
-    {
-      "title": "Escape Academy 2: Back 2 School",
-      "approxLabel": "September 2026"
-    },
-    {
-      "title": "Vapor World: Over the Mind",
-      "approxLabel": "Q3, 2026"
-    },
-    {
-      "title": "Gears of War E-Day",
-      "exactDate": "2026-10-06"
-    },
-    {
-      "title": "Echo Weaver",
-      "exactDate": "2026-10-08"
-    },
-    {
-      "title": "Forever Ago",
-      "exactDate": "2026-10-08"
-    },
-    {
-      "title": "Freestyle Football 2",
-      "approxLabel": "Q4 2026"
-    },
-    {
-      "title": "Mariachi Legends",
-      "approxLabel": "Q4 2026"
-    },
-    {
-      "title": "There Are No Ghosts At The Grand",
-      "approxLabel": "Q4, 2026"
-    },
-    {
-      "title": "Armatus",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "At Fate’s End",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Awaysis",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Bluey's Happy Snaps",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "DayZ Badlands expansion",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Deep Dish Dungeon",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Erosion",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Tanuki Pon's Summer",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "The Eternal Life of Goldman",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Tropico 7",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Vaunted",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Wildekin",
-      "approxLabel": "2026"
-    },
-    {
-      "title": "Witchbrook",
-      "approxLabel": "2026"
-    }
-  ],
-  "upcomingAnnounced": [
-    {
-      "title": "Bushiden"
-    },
-    {
-      "title": "Crowsworn"
-    },
-    {
-      "title": "Darkwood II –TBC ( source )"
-    },
-    {
-      "title": "Harmonium the Musical"
-    },
-    {
-      "title": "Nirvana Noir"
-    },
-    {
-      "title": "Persona 6"
-    },
-    {
-      "title": "Raji: Kaliyuga"
-    },
-    {
-      "title": "She Dreams Elsewhere"
-    },
-    {
-      "title": "Sleight of Hand"
-    },
-    {
-      "title": "Way to the Woods"
-    }
-  ],
-  "leavingSoon": [
-    {
-      "title": "All platforms"
-    },
-    {
-      "title": "PC"
-    },
-    {
-      "title": "Xbox"
-    },
-    {
-      "title": "PlayStation"
-    },
-    {
-      "title": "Switch"
-    },
-    {
-      "title": "Enable"
-    },
-    {
-      "title": "Disable"
-    },
-    {
-      "title": "Home"
-    },
-    {
-      "title": "Deals"
-    },
-    {
-      "title": "News"
-    },
-    {
-      "title": "Games"
-    },
-    {
-      "title": "Prepaids"
-    },
-    {
-      "title": "More Vouchers Rankings Franchises Community"
-    },
-    {
-      "title": "Sign in"
-    },
-    {
-      "title": "Subscriptions"
-    },
-    {
-      "title": "Bad news: 3 games are leaving Game Pass mid-August"
-    },
-    {
-      "title": "Firewatch (PC Game Pass, Ultimate, Premium, Essential)"
-    },
-    {
-      "title": "Aliens: Fireteam Elite (PC Game Pass, Ultimate, Premium)"
-    },
-    {
-      "title": "Atlas Fallen: Reign Of Sand (PC Game Pass, Ultimate, Premium)"
-    },
-    {
-      "title": "How to activate Steam CD key?"
-    }
-  ]
-}
+name: Aggiorna dati Game Pass
+
+on:
+  schedule:
+    # Ogni giorno alle 06:00 UTC (le 07:00 o 08:00 in Italia, a seconda
+    # dell'ora legale). La sintassi è quella standard "cron".
+    - cron: '0 6 * * *'
+  # Permette anche di far partire l'aggiornamento manualmente dal sito
+  # GitHub, utile per testare senza aspettare il giorno dopo.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Imposta Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installa le dipendenze
+        run: pip install requests beautifulsoup4
+
+      - name: Esegui lo script di aggiornamento
+        run: python scraper.py
+
+      - name: Salva il file aggiornato nel repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add upcoming_data.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Aggiornamento automatico dati Game Pass"
+          git pull --rebase origin main
+          git push
