@@ -1,167 +1,219 @@
 {
-  "updatedAt": "2026-08-03T08:30:21.685239+00:00",
+  "updatedAt": "2026-08-03T08:40:24.160928+00:00",
   "upcomingWithDate": [
     {
       "title": "Beast of Reincarnation",
-      "approxLabel": "August 4, 2026 ( source )"
+      "exactDate": "2026-08-04"
     },
     {
       "title": "Monsters are Coming! (console)",
-      "approxLabel": "August 6, 2026 ( source )"
+      "exactDate": "2026-08-06"
     },
     {
       "title": "Sandustry",
-      "approxLabel": "August 13, 2026 ( source )"
+      "exactDate": "2026-08-13"
     },
     {
       "title": "Grave Seasons",
-      "approxLabel": "August 15, 2026 ( source )"
+      "exactDate": "2026-08-15"
     },
     {
       "title": "Resonance: A Plague Tale Legacy",
-      "approxLabel": "August 27, 2026 ( source )"
+      "exactDate": "2026-08-27"
     },
     {
       "title": "Screenbound",
-      "approxLabel": "September 10, 2026 ( source )"
+      "exactDate": "2026-09-10"
     },
     {
       "title": "Dune: Awakening",
-      "approxLabel": "September 22, 2026 ( source )"
+      "exactDate": "2026-09-22"
     },
     {
       "title": "Valor Mortis",
-      "approxLabel": "September 24, 2026 ( source )"
+      "exactDate": "2026-09-24"
     },
     {
       "title": "Minecraft Dungeons II",
-      "approxLabel": "September 29, 2026 ( source )"
+      "exactDate": "2026-09-29"
     },
     {
       "title": "Escape Academy 2: Back 2 School",
-      "approxLabel": "September 2026 ( source )"
+      "approxLabel": "September 2026"
     },
     {
       "title": "Vapor World: Over the Mind",
-      "approxLabel": "Q3, 2026 ( source )"
+      "approxLabel": "Q3, 2026"
     },
     {
-      "title": "Gears of War E",
-      "approxLabel": "Day – October 6, 2026 ( source )"
+      "title": "Gears of War E-Day",
+      "exactDate": "2026-10-06"
     },
     {
       "title": "Echo Weaver",
-      "approxLabel": "October 8, 2026 ( source )"
+      "exactDate": "2026-10-08"
     },
     {
       "title": "Forever Ago",
-      "approxLabel": "October 8, 2026 ( source )"
+      "exactDate": "2026-10-08"
     },
     {
       "title": "Freestyle Football 2",
-      "approxLabel": "Q4 2026 ( source)"
+      "approxLabel": "Q4 2026"
     },
     {
       "title": "Mariachi Legends",
-      "approxLabel": "Q4 2026 ( source )"
+      "approxLabel": "Q4 2026"
     },
     {
       "title": "There Are No Ghosts At The Grand",
-      "approxLabel": "Q4, 2026 ( source )"
+      "approxLabel": "Q4, 2026"
     },
     {
       "title": "Armatus",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "At Fate’s End",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Awaysis",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Bluey's Happy Snaps",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "DayZ Badlands expansion",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Deep Dish Dungeon",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Erosion",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Tanuki Pon's Summer",
-      "approxLabel": "2026 ( source , source )"
+      "approxLabel": "2026"
     },
     {
       "title": "The Eternal Life of Goldman",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Tropico 7",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Vaunted",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Wildekin",
-      "approxLabel": "2026 ( source )"
+      "approxLabel": "2026"
     },
     {
       "title": "Witchbrook",
-      "approxLabel": "2026 ( source )"
-    },
-    {
-      "title": "Bushiden",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Crowsworn",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Darkwood II",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Harmonium the Musical",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Nirvana Noir",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Persona 6",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Raji: Kaliyuga",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "She Dreams Elsewhere",
-      "approxLabel": "TBC ( source )"
-    },
-    {
-      "title": "Sleight of Hand",
-      "approxLabel": "TBC ( source , source )"
-    },
-    {
-      "title": "Way to the Woods",
-      "approxLabel": "TBC ( source )"
+      "approxLabel": "2026"
     }
   ],
-  "upcomingAnnounced": [],
-  "leavingSoon": []
+  "upcomingAnnounced": [
+    {
+      "title": "Bushiden"
+    },
+    {
+      "title": "Crowsworn"
+    },
+    {
+      "title": "Darkwood II –TBC ( source )"
+    },
+    {
+      "title": "Harmonium the Musical"
+    },
+    {
+      "title": "Nirvana Noir"
+    },
+    {
+      "title": "Persona 6"
+    },
+    {
+      "title": "Raji: Kaliyuga"
+    },
+    {
+      "title": "She Dreams Elsewhere"
+    },
+    {
+      "title": "Sleight of Hand"
+    },
+    {
+      "title": "Way to the Woods"
+    }
+  ],
+  "leavingSoon": [
+    {
+      "title": "All platforms"
+    },
+    {
+      "title": "PC"
+    },
+    {
+      "title": "Xbox"
+    },
+    {
+      "title": "PlayStation"
+    },
+    {
+      "title": "Switch"
+    },
+    {
+      "title": "Enable"
+    },
+    {
+      "title": "Disable"
+    },
+    {
+      "title": "Home"
+    },
+    {
+      "title": "Deals"
+    },
+    {
+      "title": "News"
+    },
+    {
+      "title": "Games"
+    },
+    {
+      "title": "Prepaids"
+    },
+    {
+      "title": "More Vouchers Rankings Franchises Community"
+    },
+    {
+      "title": "Sign in"
+    },
+    {
+      "title": "Subscriptions"
+    },
+    {
+      "title": "Bad news: 3 games are leaving Game Pass mid-August"
+    },
+    {
+      "title": "Firewatch (PC Game Pass, Ultimate, Premium, Essential)"
+    },
+    {
+      "title": "Aliens: Fireteam Elite (PC Game Pass, Ultimate, Premium)"
+    },
+    {
+      "title": "Atlas Fallen: Reign Of Sand (PC Game Pass, Ultimate, Premium)"
+    },
+    {
+      "title": "How to activate Steam CD key?"
+    }
+  ]
 }
