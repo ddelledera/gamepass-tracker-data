@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-04T07:03:08.850635+00:00",
+  "updatedAt": "2026-08-04T07:09:48.120053+00:00",
   "upcomingWithDate": [
     {
       "title": "Beast of Reincarnation",
@@ -156,64 +156,16 @@
   ],
   "leavingSoon": [
     {
-      "title": "All platforms"
+      "title": "Firewatch",
+      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
     },
     {
-      "title": "PC"
+      "title": "Aliens: Fireteam Elite",
+      "tiers": "PC Game Pass, Ultimate, Premium"
     },
     {
-      "title": "Xbox"
-    },
-    {
-      "title": "PlayStation"
-    },
-    {
-      "title": "Switch"
-    },
-    {
-      "title": "Enable"
-    },
-    {
-      "title": "Disable"
-    },
-    {
-      "title": "Home"
-    },
-    {
-      "title": "Deals"
-    },
-    {
-      "title": "News"
-    },
-    {
-      "title": "Games"
-    },
-    {
-      "title": "Prepaids"
-    },
-    {
-      "title": "More Vouchers Rankings Franchises Community"
-    },
-    {
-      "title": "Sign in"
-    },
-    {
-      "title": "Subscriptions"
-    },
-    {
-      "title": "Bad news: 3 games are leaving Game Pass mid-August"
-    },
-    {
-      "title": "Firewatch (PC Game Pass, Ultimate, Premium, Essential)"
-    },
-    {
-      "title": "Aliens: Fireteam Elite (PC Game Pass, Ultimate, Premium)"
-    },
-    {
-      "title": "Atlas Fallen: Reign Of Sand (PC Game Pass, Ultimate, Premium)"
-    },
-    {
-      "title": "API"
+      "title": "Atlas Fallen: Reign Of Sand",
+      "tiers": "PC Game Pass, Ultimate, Premium"
     }
   ]
 }
