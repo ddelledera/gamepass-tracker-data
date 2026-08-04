@@ -94,7 +94,7 @@ def scrape_coming_and_announced():
             title = parts[0].strip()
             date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
 
-            if not title or title in seen_titles:
+            if not title or title in seen_titles or not looks_like_game_title(title):
                 continue
             seen_titles.add(title)
 
@@ -116,6 +116,35 @@ def scrape_coming_and_announced():
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
+
+
+def looks_like_game_title(text: str) -> bool:
+    """
+    Filtro per scartare 'rumore' tipico dei siti (FAQ, link di menu,
+    testo promozionale) che finisce nei tag <li> insieme ai veri titoli.
+    """
+    if not (2 <= len(text) <= 80):
+        return False
+
+    lowered = text.lower()
+
+    # Le domande FAQ e i link generici del sito non sono titoli di giochi.
+    if "?" in text:
+        return False
+
+    noise_starts = (
+        "how to", "what is", "what are", "why", "when will", "where",
+        "regular price", "read more", "compare prices", "best price",
+        "buy ", "sign up", "subscribe", "follow us", "related",
+    )
+    if lowered.startswith(noise_starts):
+        return False
+
+    noise_contains = ("cd key", "activate", "cookie", "privacy policy")
+    if any(phrase in lowered for phrase in noise_contains):
+        return False
+
+    return True
 
 
 def scrape_leaving_soon():
@@ -146,7 +175,7 @@ def scrape_leaving_soon():
     leaving = []
     for li in article_soup.find_all("li"):
         text = li.get_text(" ", strip=True)
-        if 2 <= len(text) <= 80 and not text.lower().startswith("regular price"):
+        if looks_like_game_title(text):
             leaving.append({"title": text})
 
     print(f"[leaving] Righe <li> candidate trovate: {len(leaving)}")
