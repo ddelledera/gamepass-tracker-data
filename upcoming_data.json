@@ -1,8 +1,12 @@
 {
-  "updatedAt": "2026-08-04T07:09:48.120053+00:00",
+  "updatedAt": "2026-08-04T08:08:21.801723+00:00",
   "upcomingWithDate": [
     {
       "title": "Beast of Reincarnation",
+      "exactDate": "2026-08-04"
+    },
+    {
+      "title": "Heretic + Hexen (Joining Premium)",
       "exactDate": "2026-08-04"
     },
     {
@@ -20,10 +24,6 @@
     {
       "title": "Resonance: A Plague Tale Legacy",
       "exactDate": "2026-08-27"
-    },
-    {
-      "title": "Screenbound",
-      "exactDate": "2026-09-10"
     },
     {
       "title": "Dune: Awakening",
@@ -120,6 +120,66 @@
     {
       "title": "Witchbrook",
       "approxLabel": "2026"
+    },
+    {
+      "title": "Stranger Than Heaven",
+      "exactDate": "2027-01-15"
+    },
+    {
+      "title": "Persona 4 Revival",
+      "exactDate": "2027-02-18"
+    },
+    {
+      "title": "Fable",
+      "exactDate": "2027-02-23"
+    },
+    {
+      "title": "JOIN US",
+      "approxLabel": "March 2027"
+    },
+    {
+      "title": "Wo Long 2: Wings of Ember",
+      "approxLabel": "Q1 2027 ( source ; source )"
+    },
+    {
+      "title": "Spyro: A Realm Beyond",
+      "approxLabel": "Spring 2027"
+    },
+    {
+      "title": "The Expanse Osiris Reborn",
+      "approxLabel": "Q2 2027"
+    },
+    {
+      "title": "Alien Deathstorm",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Bad Magpie",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Clockwork Revolution",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Magician: The Devil's Deal",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Moosa: Dirty Fate",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Senua",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "State of Decay 3",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Vivarium",
+      "approxLabel": "2027"
     }
   ],
   "upcomingAnnounced": [
@@ -143,6 +203,9 @@
     },
     {
       "title": "Raji: Kaliyuga"
+    },
+    {
+      "title": "Screenbound"
     },
     {
       "title": "She Dreams Elsewhere"
