@@ -71,48 +71,59 @@ def scrape_coming_and_announced():
 
     for heading in soup.find_all(re.compile("^h[1-4]$")):
         heading_text = heading.get_text(strip=True).lower()
-        if "coming" not in heading_text and "announced" not in heading_text:
+
+        matches_keyword = "coming" in heading_text or "announced" in heading_text
+        # Alcune sezioni sono intestate solo con l'anno (es. "2027"), senza
+        # le parole "coming"/"announced": le riconosciamo comunque così.
+        matches_year = re.search(r"\b20\d{2}\b", heading_text) is not None
+
+        if not (matches_keyword or matches_year):
             continue
 
+        # Raccogliamo TUTTE le liste (<ul>) che si trovano tra questa
+        # intestazione e la prossima, non solo la prima: alcune sezioni
+        # hanno più blocchi separati (es. suddivisi per mese).
+        lists_found = []
         sibling = heading.find_next_sibling()
         steps = 0
-        while sibling is not None and sibling.name != "ul" and steps < 6:
+        while sibling is not None and not re.match(r"^h[1-4]$", sibling.name or "") and steps < 30:
+            if sibling.name == "ul":
+                lists_found.append(sibling)
             sibling = sibling.find_next_sibling()
             steps += 1
 
-        if sibling is None or sibling.name != "ul":
-            continue
+        for ul in lists_found:
+            for li in ul.find_all("li"):
+                raw_text = li.get_text(" ", strip=True)
+                if not raw_text:
+                    continue
 
-        for li in sibling.find_all("li"):
-            raw_text = li.get_text(" ", strip=True)
-            if not raw_text:
-                continue
+                # Separatore Titolo/Data: un trattino CIRCONDATO DA SPAZI,
+                # per non spezzare titoli con trattini (es. "E-Day").
+                parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
+                title = parts[0].strip()
+                date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
 
-            # Separatore Titolo/Data: un trattino CIRCONDATO DA SPAZI, per
-            # non spezzare titoli che contengono trattini (es. "E-Day").
-            parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
-            title = parts[0].strip()
-            date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
+                if (not title or title in seen_titles
+                        or not looks_like_game_title(title)):
+                    continue
+                seen_titles.add(title)
 
-            if not title or title in seen_titles or not looks_like_game_title(title):
-                continue
-            seen_titles.add(title)
+                if not date_text or date_text.upper() == "TBC":
+                    announced.append({"title": title})
+                    continue
 
-            if not date_text or date_text.upper() == "TBC":
-                announced.append({"title": title})
-                continue
-
-            parsed = parse_date(date_text)
-            if parsed:
-                with_date.append({
-                    "title": title,
-                    "exactDate": parsed.strftime("%Y-%m-%d"),
-                })
-            else:
-                with_date.append({
-                    "title": title,
-                    "approxLabel": date_text,
-                })
+                parsed = parse_date(date_text)
+                if parsed:
+                    with_date.append({
+                        "title": title,
+                        "exactDate": parsed.strftime("%Y-%m-%d"),
+                    })
+                else:
+                    with_date.append({
+                        "title": title,
+                        "approxLabel": date_text,
+                    })
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
