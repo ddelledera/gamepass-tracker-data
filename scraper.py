@@ -147,11 +147,20 @@ def looks_like_game_title(text: str) -> bool:
     return True
 
 
+GAME_PASS_TAG_PATTERN = re.compile(
+    r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$"
+)
+
+
 def scrape_leaving_soon():
     """
     Trova l'articolo più recente sulla pagina indice "giochi in uscita" e
     ne estrae l'elenco dei titoli. Più fragile delle altre funzioni perché
     si basa su un articolo di notizie, non su una lista sempre aggiornata.
+
+    Riconosciamo i veri giochi (e scartiamo menu/link del sito) cercando
+    solo le righe che terminano con un tag tipo "(PC Game Pass, Ultimate,
+    Premium)" — è il formato che questo sito usa sempre per i giochi.
     """
     index_soup = fetch_soup(LEAVING_INDEX_URL)
 
@@ -173,12 +182,23 @@ def scrape_leaving_soon():
     article_soup = fetch_soup(article_link)
 
     leaving = []
-    for li in article_soup.find_all("li"):
-        text = li.get_text(" ", strip=True)
-        if looks_like_game_title(text):
-            leaving.append({"title": text})
+    # Cerchiamo il pattern sia nei tag <li> sia nei <p>, per non dipendere
+    # troppo dalla struttura HTML esatta usata dall'articolo.
+    for element in article_soup.find_all(["li", "p", "strong"]):
+        text = element.get_text(" ", strip=True)
+        match = GAME_PASS_TAG_PATTERN.match(text)
+        if not match:
+            continue
 
-    print(f"[leaving] Righe <li> candidate trovate: {len(leaving)}")
+        title = match.group(1).strip(" -–—:")
+        tiers = match.group(2).strip()
+
+        if not looks_like_game_title(title) or len(title.split()) > 8:
+            continue
+
+        leaving.append({"title": title, "tiers": tiers})
+
+    print(f"[leaving] Giochi riconosciuti tramite tag Game Pass: {len(leaving)}")
 
     seen = set()
     unique_leaving = []
