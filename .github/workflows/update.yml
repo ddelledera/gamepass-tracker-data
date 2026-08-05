@@ -2,11 +2,10 @@ name: Aggiorna dati Game Pass
 
 on:
   schedule:
-    # Ogni giorno alle 06:00 UTC (le 07:00 o 08:00 in Italia, a seconda
-    # dell'ora legale). La sintassi è quella standard "cron".
-    - cron: '0 6 * * *'
+    # Ogni 6 ore (alle 00:00, 06:00, 12:00, 18:00 UTC).
+    - cron: '0 */6 * * *'
   # Permette anche di far partire l'aggiornamento manualmente dal sito
-  # GitHub, utile per testare senza aspettare il giorno dopo.
+  # GitHub, utile per testare senza aspettare il prossimo giro.
   workflow_dispatch:
 
 permissions:
