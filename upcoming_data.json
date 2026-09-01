@@ -1,18 +1,6 @@
 {
-  "updatedAt": "2026-09-01T12:06:29.446155+00:00",
+  "updatedAt": "2026-09-01T18:05:44.736634+00:00",
   "upcomingWithDate": [
-    {
-      "title": "Resonance: A Plague Tale Legacy",
-      "exactDate": "2026-08-27"
-    },
-    {
-      "title": "Young Suns (joining Premium)",
-      "exactDate": "2026-08-31"
-    },
-    {
-      "title": "Shelldiver (joining Premium)",
-      "exactDate": "2026-09-01"
-    },
     {
       "title": "Dune: Awakening",
       "exactDate": "2026-09-22"
@@ -40,6 +28,26 @@
     {
       "title": "Forever Ago",
       "exactDate": "2026-10-08"
+    },
+    {
+      "title": "The Seance of Blake Manor",
+      "exactDate": "2026-10-27"
+    },
+    {
+      "title": "Terrible Lizards",
+      "exactDate": "2026-10-29"
+    },
+    {
+      "title": "Arkheron",
+      "approxLabel": "Fall 2026"
+    },
+    {
+      "title": "Neon Abyss 2",
+      "approxLabel": "Fall 2026"
+    },
+    {
+      "title": "Dumpster Gang (PC)",
+      "approxLabel": "December 2026"
     },
     {
       "title": "Freestyle Football 2",
@@ -82,6 +90,10 @@
       "approxLabel": "2026"
     },
     {
+      "title": "Gravhounds",
+      "approxLabel": "2026"
+    },
+    {
       "title": "Grave Seasons",
       "approxLabel": "2026 ( source ; source)"
     },
@@ -99,6 +111,10 @@
     },
     {
       "title": "Vaunted",
+      "approxLabel": "2026"
+    },
+    {
+      "title": "What Goes Up",
       "approxLabel": "2026"
     },
     {
@@ -126,6 +142,10 @@
       "approxLabel": "March 2027"
     },
     {
+      "title": "Son of Thanjai",
+      "approxLabel": "Spring 2027"
+    },
+    {
       "title": "Wo Long 2: Wings of Ember",
       "approxLabel": "Q1 2027 ( source ; source )"
     },
@@ -150,7 +170,19 @@
       "approxLabel": "2027"
     },
     {
+      "title": "Holstin",
+      "approxLabel": "2027"
+    },
+    {
       "title": "Magician: The Devil's Deal",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Medieval Dynasty: The Backwood DLC",
+      "approxLabel": "2027"
+    },
+    {
+      "title": "Militsioner",
       "approxLabel": "2027"
     },
     {
