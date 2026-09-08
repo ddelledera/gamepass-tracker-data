@@ -10,6 +10,7 @@ Pensato per girare automaticamente ogni giorno tramite GitHub Actions.
 
 import json
 import re
+import time
 from datetime import datetime, timezone
 
 import requests
@@ -17,7 +18,17 @@ from bs4 import BeautifulSoup
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+    "image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Referer": "https://www.google.com/",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "cross-site",
+    "Upgrade-Insecure-Requests": "1",
+    "Connection": "keep-alive",
 }
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
@@ -30,8 +41,18 @@ MONTHS_IT = {
 }
 
 
+# Sessione condivisa: mantiene i cookie tra una richiesta e l'altra,
+# come farebbe un browser vero (alcuni siti lo richiedono per non
+# bloccare le richieste come "bot").
+_session = requests.Session()
+_session.headers.update(HEADERS)
+
+
 def fetch_soup(url: str) -> BeautifulSoup:
-    response = requests.get(url, headers=HEADERS, timeout=20)
+    # Piccola pausa prima di ogni richiesta: rende il comportamento meno
+    # "meccanico" agli occhi dei sistemi anti-bot.
+    time.sleep(2)
+    response = _session.get(url, timeout=20)
     response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser")
 
