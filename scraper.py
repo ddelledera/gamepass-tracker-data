@@ -1,11 +1,13 @@
 """
 Script di aggiornamento automatico per Game Pass Tracker.
 
-Scarica le pagine di gg.deals con i giochi in arrivo/annunciati/in uscita
-da Xbox Game Pass, le analizza, e salva tutto in un file JSON
-(upcoming_data.json) che l'app Flutter scarica direttamente.
+Scarica da xboxgamepasslist.com (un database indipendente dedicato al
+catalogo Xbox Game Pass) le liste di giochi "Coming Soon" e "Leaving
+Soon", le analizza, e salva tutto in un file JSON (upcoming_data.json)
+che l'app Flutter scarica direttamente.
 
-Pensato per girare automaticamente ogni giorno tramite GitHub Actions.
+Pensato per girare automaticamente più volte al giorno tramite
+GitHub Actions.
 """
 
 import json
@@ -22,49 +24,41 @@ HEADERS = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
     "image/avif,image/webp,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Encoding": "gzip, deflate, br",
     "Referer": "https://www.google.com/",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "cross-site",
-    "Upgrade-Insecure-Requests": "1",
     "Connection": "keep-alive",
 }
 
-COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
-LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
+BASE_URL = "https://www.xboxgamepasslist.com/"
+MAX_PAGES = 6  # limite di sicurezza per evitare loop infiniti
 
-MONTHS_IT = {
-    1: "Gennaio", 2: "Febbraio", 3: "Marzo", 4: "Aprile",
-    5: "Maggio", 6: "Giugno", 7: "Luglio", 8: "Agosto",
-    9: "Settembre", 10: "Ottobre", 11: "Novembre", 12: "Dicembre",
-}
-
-
-# Sessione condivisa: mantiene i cookie tra una richiesta e l'altra,
-# come farebbe un browser vero (alcuni siti lo richiedono per non
-# bloccare le richieste come "bot").
 _session = requests.Session()
 _session.headers.update(HEADERS)
 
 
 def fetch_soup(url: str) -> BeautifulSoup:
-    # Piccola pausa prima di ogni richiesta: rende il comportamento meno
-    # "meccanico" agli occhi dei sistemi anti-bot.
     time.sleep(2)
     response = _session.get(url, timeout=20)
     response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser")
 
 
-def parse_date(text: str):
-    """
-    Prova a interpretare una data testuale (es. "August 4, 2026") in un
-    oggetto datetime. Ritorna None se non è una data esatta riconoscibile
-    (es. "TBC", "Q4 2026", "2026" da soli restano come testo libero).
-    """
+def looks_like_game_title(text: str) -> bool:
+    if not (2 <= len(text) <= 100):
+        return False
+    lowered = text.lower()
+    if "?" in text:
+        return False
+    noise_starts = ("how to", "what is", "what are", "why", "when will")
+    if lowered.startswith(noise_starts):
+        return False
+    return True
+
+
+def parse_exact_date(text: str):
+    """Es. 'Oct 6, 2026' -> datetime. Ritorna None se non è una data
+    esatta (es. 'TBA')."""
     text = text.strip()
-    for fmt in ("%B %d, %Y", "%b %d, %Y", "%d %B %Y"):
+    for fmt in ("%b %d, %Y", "%B %d, %Y"):
         try:
             return datetime.strptime(text, fmt)
         except ValueError:
@@ -72,174 +66,129 @@ def parse_date(text: str):
     return None
 
 
-def clean_date_text(text: str) -> str:
-    """Rimuove annotazioni tipo '( source )' o '( source, source )'."""
-    text = re.sub(r"\(\s*source\s*(,\s*source\s*)*\)", "", text, flags=re.IGNORECASE)
-    return text.strip(" -–—\t")
+def parse_table_rows(soup):
+    """Analizza la tabella principale della pagina e restituisce una
+    lista di dizionari grezzi: title, status, added, leaving."""
+    rows_data = []
+    table = soup.find("table")
+    if table is None:
+        return rows_data
+
+    for row in table.find_all("tr"):
+        cells = row.find_all("td")
+        if len(cells) < 7:
+            continue
+
+        game_cell = cells[0]
+        link = game_cell.find("a")
+        if link is None:
+            continue
+        title = link.get_text(strip=True)
+        if not title or not looks_like_game_title(title):
+            continue
+
+        status = cells[4].get_text(strip=True)
+        added = cells[5].get_text(strip=True)
+        leaving = cells[6].get_text(strip=True)
+
+        rows_data.append({
+            "title": title,
+            "status": status,
+            "added": added,
+            "leaving": leaving,
+        })
+
+    return rows_data
+
+
+def fetch_all_pages(status_filter: str, extra_query: str = ""):
+    """Scarica tutte le pagine di risultati per un filtro di stato,
+    seguendo la paginazione finché ce n'è (fino a MAX_PAGES)."""
+    all_rows = []
+    for page in range(1, MAX_PAGES + 1):
+        if page == 1:
+            url = f"{BASE_URL}?status={status_filter}{extra_query}"
+        else:
+            url = f"{BASE_URL}?status={status_filter}{extra_query}&page={page}"
+
+        try:
+            soup = fetch_soup(url)
+        except Exception as e:
+            print(f"[{status_filter}] Errore pagina {page}: {e}")
+            break
+
+        rows = parse_table_rows(soup)
+        print(f"[{status_filter}] Pagina {page}: {len(rows)} righe trovate.")
+        if not rows:
+            break
+        all_rows.extend(rows)
+
+        # Se non c'è un link "Next" nella pagina, ci fermiamo qui.
+        next_link = soup.find("a", string=re.compile(r"^\s*Next\s*$", re.IGNORECASE))
+        if next_link is None:
+            break
+
+    return all_rows
 
 
 def scrape_coming_and_announced():
-    """
-    Analizza la pagina "lista completa" di gg.deals. È UNA lista unica per
-    sezione, dove ogni riga è "Titolo - Data" e i giochi senza data
-    confermata hanno semplicemente "TBC" al posto della data.
-    """
-    soup = fetch_soup(COMING_URL)
+    rows = fetch_all_pages("COMING_SOON")
 
     with_date = []
     announced = []
-    seen_titles = set()
+    seen = set()
 
-    for heading in soup.find_all(re.compile("^h[1-4]$")):
-        heading_text = heading.get_text(strip=True).lower()
+    for row in rows:
+        title = row["title"]
+        if title in seen:
+            continue
+        seen.add(title)
 
-        matches_keyword = "coming" in heading_text or "announced" in heading_text
-        # Alcune sezioni sono intestate solo con l'anno (es. "2027"), senza
-        # le parole "coming"/"announced": le riconosciamo comunque così.
-        matches_year = re.search(r"\b20\d{2}\b", heading_text) is not None
-
-        if not (matches_keyword or matches_year):
+        added = row["added"]
+        if not added or added.upper() == "TBA":
+            announced.append({"title": title})
             continue
 
-        # Raccogliamo TUTTE le liste (<ul>) che si trovano tra questa
-        # intestazione e la prossima, non solo la prima: alcune sezioni
-        # hanno più blocchi separati (es. suddivisi per mese).
-        lists_found = []
-        sibling = heading.find_next_sibling()
-        steps = 0
-        while sibling is not None and not re.match(r"^h[1-4]$", sibling.name or "") and steps < 30:
-            if sibling.name == "ul":
-                lists_found.append(sibling)
-            sibling = sibling.find_next_sibling()
-            steps += 1
-
-        for ul in lists_found:
-            for li in ul.find_all("li"):
-                raw_text = li.get_text(" ", strip=True)
-                if not raw_text:
-                    continue
-
-                # Separatore Titolo/Data: un trattino CIRCONDATO DA SPAZI,
-                # per non spezzare titoli con trattini (es. "E-Day").
-                parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
-                title = parts[0].strip()
-                date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
-
-                if (not title or title in seen_titles
-                        or not looks_like_game_title(title)):
-                    continue
-                seen_titles.add(title)
-
-                if not date_text or date_text.upper() == "TBC":
-                    announced.append({"title": title})
-                    continue
-
-                parsed = parse_date(date_text)
-                if parsed:
-                    with_date.append({
-                        "title": title,
-                        "exactDate": parsed.strftime("%Y-%m-%d"),
-                    })
-                else:
-                    with_date.append({
-                        "title": title,
-                        "approxLabel": date_text,
-                    })
+        parsed = parse_exact_date(added)
+        if parsed:
+            with_date.append({
+                "title": title,
+                "exactDate": parsed.strftime("%Y-%m-%d"),
+            })
+        else:
+            with_date.append({"title": title, "approxLabel": added})
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
 
 
-def looks_like_game_title(text: str) -> bool:
-    """
-    Filtro per scartare 'rumore' tipico dei siti (FAQ, link di menu,
-    testo promozionale) che finisce nei tag <li> insieme ai veri titoli.
-    """
-    if not (2 <= len(text) <= 80):
-        return False
-
-    lowered = text.lower()
-
-    # Le domande FAQ e i link generici del sito non sono titoli di giochi.
-    if "?" in text:
-        return False
-
-    noise_starts = (
-        "how to", "what is", "what are", "why", "when will", "where",
-        "regular price", "read more", "compare prices", "best price",
-        "buy ", "sign up", "subscribe", "follow us", "related",
-    )
-    if lowered.startswith(noise_starts):
-        return False
-
-    noise_contains = ("cd key", "activate", "cookie", "privacy policy")
-    if any(phrase in lowered for phrase in noise_contains):
-        return False
-
-    return True
-
-
-GAME_PASS_TAG_PATTERN = re.compile(
-    r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$"
-)
-
-
 def scrape_leaving_soon():
-    """
-    Trova l'articolo più recente sulla pagina indice "giochi in uscita" e
-    ne estrae l'elenco dei titoli. Più fragile delle altre funzioni perché
-    si basa su un articolo di notizie, non su una lista sempre aggiornata.
-
-    Riconosciamo i veri giochi (e scartiamo menu/link del sito) cercando
-    solo le righe che terminano con un tag tipo "(PC Game Pass, Ultimate,
-    Premium)" — è il formato che questo sito usa sempre per i giochi.
-    """
-    index_soup = fetch_soup(LEAVING_INDEX_URL)
-
-    candidate_links = []
-    for a in index_soup.find_all("a", href=True):
-        href = a["href"]
-        if "/subscription-news/" in href and "leav" in href.lower():
-            candidate_links.append(href)
-
-    print(f"[leaving] Trovati {len(candidate_links)} link candidati.")
-    if not candidate_links:
-        return []
-
-    article_link = candidate_links[0]
-    if article_link.startswith("/"):
-        article_link = "https://gg.deals" + article_link
-    print(f"[leaving] Uso l'articolo: {article_link}")
-
-    article_soup = fetch_soup(article_link)
+    rows = fetch_all_pages("LEAVING_SOON", extra_query="&sort=leaving-soon")
 
     leaving = []
-    # Cerchiamo il pattern sia nei tag <li> sia nei <p>, per non dipendere
-    # troppo dalla struttura HTML esatta usata dall'articolo.
-    for element in article_soup.find_all(["li", "p", "strong"]):
-        text = element.get_text(" ", strip=True)
-        match = GAME_PASS_TAG_PATTERN.match(text)
-        if not match:
-            continue
-
-        title = match.group(1).strip(" -–—:")
-        tiers = match.group(2).strip()
-
-        if not looks_like_game_title(title) or len(title.split()) > 8:
-            continue
-
-        leaving.append({"title": title, "tiers": tiers})
-
-    print(f"[leaving] Giochi riconosciuti tramite tag Game Pass: {len(leaving)}")
-
     seen = set()
-    unique_leaving = []
-    for game in leaving:
-        if game["title"] not in seen:
-            seen.add(game["title"])
-            unique_leaving.append(game)
 
-    return unique_leaving[:20]  # Limite di sicurezza
+    for row in rows:
+        title = row["title"]
+        if title in seen:
+            continue
+        seen.add(title)
+
+        leaving_date = row["leaving"]
+        if not leaving_date or leaving_date.upper() == "TBA":
+            continue  # senza data non è utile in questa sezione
+
+        parsed = parse_exact_date(leaving_date)
+        if parsed:
+            leaving.append({
+                "title": title,
+                "exactDate": parsed.strftime("%Y-%m-%d"),
+            })
+        else:
+            leaving.append({"title": title, "approxLabel": leaving_date})
+
+    print(f"[leaving] Trovati: {len(leaving)}")
+    return leaving[:30]  # limite di sicurezza
 
 
 def main():
