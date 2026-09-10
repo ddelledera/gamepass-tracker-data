@@ -24,6 +24,8 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Esegui lo script di aggiornamento
+        env:
+          ZENROWS_API_KEY: ${{ secrets.ZENROWS_API_KEY }}
         run: python scraper.py
 
       - name: Salva il file aggiornato nel repository
