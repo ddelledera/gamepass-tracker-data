@@ -2,9 +2,12 @@
 Script di aggiornamento automatico per Game Pass Tracker.
 
 Scarica le pagine di gg.deals con i giochi in arrivo/annunciati/in uscita
-da Xbox Game Pass, usando un browser reale (Playwright) per aggirare il
-blocco anti-bot che il sito applica alle richieste HTTP "semplici".
-Salva tutto in upcoming_data.json, letto direttamente dall'app Flutter.
+da Xbox Game Pass, le analizza, e salva tutto in un file JSON
+(upcoming_data.json) che l'app Flutter scarica direttamente.
+
+Versione "leggera": richieste HTTP semplici (nessun browser headless),
+per ridurre al minimo l'impronta e il rischio di essere segnalati come
+traffico automatico. Pensato per girare una volta al giorno.
 """
 
 import json
@@ -12,37 +15,39 @@ import re
 import time
 from datetime import datetime, timezone
 
-from playwright.sync_api import sync_playwright
+import requests
 from bs4 import BeautifulSoup
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+    "image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.google.com/",
+    "Connection": "keep-alive",
+}
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
 LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
 
-_playwright = sync_playwright().start()
-_browser = _playwright.chromium.launch()
-_page = _browser.new_page(
-    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-)
+_session = requests.Session()
+_session.headers.update(HEADERS)
 
 
 def fetch_soup(url: str) -> BeautifulSoup:
-    time.sleep(1)
-    _page.goto(url, wait_until="networkidle", timeout=30000)
-    html = _page.content()
-    return BeautifulSoup(html, "html.parser")
+    time.sleep(3)  # ritmo più umano, meno "a raffica"
+    response = _session.get(url, timeout=20)
+    response.raise_for_status()
+    return BeautifulSoup(response.text, "html.parser")
 
 
 def looks_like_game_title(text: str) -> bool:
-    """Filtro per scartare 'rumore' tipico dei siti (FAQ, link di menu,
-    testo promozionale) che finisce nei tag insieme ai veri titoli."""
     if not (2 <= len(text) <= 80):
         return False
-
     lowered = text.lower()
     if "?" in text:
         return False
-
     noise_starts = (
         "how to", "what is", "what are", "why", "when will", "where",
         "regular price", "read more", "compare prices", "best price",
@@ -50,11 +55,9 @@ def looks_like_game_title(text: str) -> bool:
     )
     if lowered.startswith(noise_starts):
         return False
-
     noise_contains = ("cd key", "activate", "cookie", "privacy policy")
     if any(phrase in lowered for phrase in noise_contains):
         return False
-
     return True
 
 
@@ -133,8 +136,6 @@ GAME_PASS_TAG_PATTERN = re.compile(r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$")
 
 
 def get_article_publish_date(soup):
-    """Cerca la data di pubblicazione reale dell'articolo, provando i
-    posti più comuni dove i siti la mettono (meta tag standard)."""
     meta_names = [
         ("property", "article:published_time"),
         ("property", "article:modified_time"),
@@ -178,11 +179,8 @@ def scrape_leaving_soon():
     if not candidate_links:
         return []
 
-    # Controlliamo la data di pubblicazione reale dei primi candidati
-    # (non ci fidiamo dell'ordine in cui compaiono nella pagina) e
-    # scegliamo quello più recente.
     checked = []
-    for href in candidate_links[:4]:
+    for href in candidate_links[:3]:  # ridotto a 3 per limitare le richieste
         full_url = "https://gg.deals" + href if href.startswith("/") else href
         try:
             candidate_soup = fetch_soup(full_url)
@@ -193,7 +191,6 @@ def scrape_leaving_soon():
         print(f"[leaving] Candidato: {full_url} -> data: {pub_date}")
         checked.append((pub_date, full_url, candidate_soup))
 
-    # Ordiniamo per data (i None finiscono per ultimi) e prendiamo il più recente.
     checked.sort(key=lambda item: item[0] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
 
     if not checked:
@@ -254,9 +251,6 @@ def main():
 
     print(f"Salvati: {len(with_date)} con data, {len(announced)} annunciati, "
           f"{len(leaving)} in uscita.")
-
-    _browser.close()
-    _playwright.stop()
 
 
 if __name__ == "__main__":
