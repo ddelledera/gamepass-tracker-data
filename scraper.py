@@ -38,8 +38,9 @@ def fetch_soup(url: str) -> BeautifulSoup:
         "apikey": ZENROWS_API_KEY,
         "js_render": "true",
         "premium_proxy": "true",
+        "wait": "3000",  # aspetta 3 secondi extra dopo il caricamento
     }
-    response = requests.get(ZENROWS_ENDPOINT, params=params, timeout=60)
+    response = requests.get(ZENROWS_ENDPOINT, params=params, timeout=90)
     response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser")
 
@@ -220,17 +221,27 @@ def scrape_leaving_soon():
 
 
 def main():
-    try:
-        with_date, announced = scrape_coming_and_announced()
-    except Exception as e:
-        print(f"Errore nello scraping 'coming/announced': {e}")
-        with_date, announced = [], []
+    with_date, announced = [], []
+    for attempt in range(1, 3):
+        try:
+            with_date, announced = scrape_coming_and_announced()
+        except Exception as e:
+            print(f"Errore nello scraping 'coming/announced' (tentativo {attempt}): {e}")
+        if with_date or announced:
+            break
+        print(f"[coming] Risultato vuoto al tentativo {attempt}, riprovo...")
+        time.sleep(5)
 
-    try:
-        leaving = scrape_leaving_soon()
-    except Exception as e:
-        print(f"Errore nello scraping 'leaving soon': {e}")
-        leaving = []
+    leaving = []
+    for attempt in range(1, 3):
+        try:
+            leaving = scrape_leaving_soon()
+        except Exception as e:
+            print(f"Errore nello scraping 'leaving soon' (tentativo {attempt}): {e}")
+        if leaving:
+            break
+        print(f"[leaving] Risultato vuoto al tentativo {attempt}, riprovo...")
+        time.sleep(5)
 
     data = {
         "updatedAt": datetime.now(timezone.utc).isoformat(),
