@@ -78,6 +78,9 @@ def parse_date(text: str):
     return None
 
 
+ENTRY_PATTERN = re.compile(r"^(.+?)\s*[-–—]\s*(.+?)\s*\(\s*source", re.IGNORECASE)
+
+
 def scrape_coming_and_announced():
     soup = fetch_soup(COMING_URL)
 
@@ -85,50 +88,38 @@ def scrape_coming_and_announced():
     announced = []
     seen_titles = set()
 
-    for heading in soup.find_all(re.compile("^h[1-4]$")):
-        heading_text = heading.get_text(strip=True).lower()
-
-        matches_keyword = "coming" in heading_text or "announced" in heading_text
-        matches_year = re.search(r"\b20\d{2}\b", heading_text) is not None
-        if not (matches_keyword or matches_year):
+    # Ogni riga vera ha il formato "Titolo – Data (source...)": cerchiamo
+    # questo schema in tutti gli elementi di testo della pagina, senza
+    # dipendere dalla struttura esatta (tag, intestazioni, liste) usata
+    # dal sito, che potrebbe non corrispondere a quella "visibile".
+    for element in soup.find_all(["li", "p", "strong"]):
+        raw_text = element.get_text(" ", strip=True)
+        if not raw_text or "(source" not in raw_text.lower():
             continue
 
-        lists_found = []
-        sibling = heading.find_next_sibling()
-        steps = 0
-        while sibling is not None and not re.match(r"^h[1-4]$", sibling.name or "") and steps < 30:
-            if sibling.name == "ul":
-                lists_found.append(sibling)
-            sibling = sibling.find_next_sibling()
-            steps += 1
+        match = ENTRY_PATTERN.match(raw_text)
+        if not match:
+            continue
 
-        for ul in lists_found:
-            for li in ul.find_all("li"):
-                raw_text = li.get_text(" ", strip=True)
-                if not raw_text:
-                    continue
+        title = match.group(1).strip(" -–—:")
+        date_text = clean_date_text(match.group(2))
 
-                parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
-                title = parts[0].strip()
-                date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
+        if not title or title in seen_titles or not looks_like_game_title(title):
+            continue
+        seen_titles.add(title)
 
-                if (not title or title in seen_titles
-                        or not looks_like_game_title(title)):
-                    continue
-                seen_titles.add(title)
+        if not date_text or date_text.upper() == "TBC":
+            announced.append({"title": title})
+            continue
 
-                if not date_text or date_text.upper() == "TBC":
-                    announced.append({"title": title})
-                    continue
-
-                parsed = parse_date(date_text)
-                if parsed:
-                    with_date.append({
-                        "title": title,
-                        "exactDate": parsed.strftime("%Y-%m-%d"),
-                    })
-                else:
-                    with_date.append({"title": title, "approxLabel": date_text})
+        parsed = parse_date(date_text)
+        if parsed:
+            with_date.append({
+                "title": title,
+                "exactDate": parsed.strftime("%Y-%m-%d"),
+            })
+        else:
+            with_date.append({"title": title, "approxLabel": date_text})
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
