@@ -26,9 +26,10 @@ ZENROWS_ENDPOINT = "https://api.zenrows.com/v1/"
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
 LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
+WAVE_INDEX_URL = "https://gg.deals/news/subscriptions/"
 
 
-def fetch_soup(url: str) -> BeautifulSoup:
+def fetch_soup(url: str, js_render: bool = True, antibot: bool = False) -> BeautifulSoup:
     if not ZENROWS_API_KEY:
         raise RuntimeError("ZENROWS_API_KEY non impostata.")
 
@@ -36,10 +37,14 @@ def fetch_soup(url: str) -> BeautifulSoup:
     params = {
         "url": url,
         "apikey": ZENROWS_API_KEY,
-        "js_render": "true",
         "premium_proxy": "true",
-        "wait": "3000",  # aspetta 3 secondi extra dopo il caricamento
     }
+    if js_render:
+        params["js_render"] = "true"
+        params["wait"] = "3000"
+    if antibot:
+        params["antibot"] = "true"
+
     response = requests.get(ZENROWS_ENDPOINT, params=params, timeout=90)
     response.raise_for_status()
     return BeautifulSoup(response.text, "html.parser")
@@ -83,23 +88,23 @@ ENTRY_PATTERN = re.compile(r"^(.+?)\s*[-–—]\s*(.+?)\s*\(\s*source", re.IGNOR
 
 
 def scrape_coming_and_announced():
-    soup = fetch_soup(COMING_URL)
+    """
+    Torniamo alla pagina "lista completa" (COMING_URL), questa volta con
+    la modalita' antibot di ZenRows attiva: un sistema dedicato a
+    superare protezioni avanzate (diverso dal semplice proxy+rendering
+    JS usato finora), pensato apposta per casi come "cloaking" (il sito
+    che restituisce contenuto ridotto a chi sospetta essere un bot).
+    """
+    soup = fetch_soup(COMING_URL, js_render=True, antibot=True)
 
     page_text = soup.get_text(" ", strip=True)
     print(f"[coming] Lunghezza testo pagina: {len(page_text)} caratteri.")
-    print(f"[coming] Titolo pagina: {soup.title.get_text(strip=True) if soup.title else 'ASSENTE'}")
-    print(f"[coming] Contiene 'Game Pass': {'Game Pass' in page_text}")
     print(f"[coming] Contiene '(source': {'(source' in page_text.lower()}")
-    print(f"[coming] Elementi li/p/strong trovati: {len(soup.find_all(['li', 'p', 'strong']))}")
 
     with_date = []
     announced = []
     seen_titles = set()
 
-    # Ogni riga vera ha il formato "Titolo – Data (source...)": cerchiamo
-    # questo schema in tutti gli elementi di testo della pagina, senza
-    # dipendere dalla struttura esatta (tag, intestazioni, liste) usata
-    # dal sito, che potrebbe non corrispondere a quella "visibile".
     for element in soup.find_all(["li", "p", "strong"]):
         raw_text = element.get_text(" ", strip=True)
         if not raw_text or "(source" not in raw_text.lower():
