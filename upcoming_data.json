@@ -1,23 +1,47 @@
 {
-  "updatedAt": "2026-09-10T11:50:57.903036+00:00",
+  "updatedAt": "2026-09-10T11:57:15.563395+00:00",
   "upcomingWithDate": [],
   "upcomingAnnounced": [],
   "leavingSoon": [
     {
-      "title": "Firewatch",
+      "title": "Commandos: Origins",
+      "tiers": "PC Game Pass, Ultimate, Premium"
+    },
+    {
+      "title": "Cricket 24",
+      "tiers": "PC Game Pass, Ultimate, Premium"
+    },
+    {
+      "title": "Cyberpunk 2077",
+      "tiers": "Game Pass Ultimate, Premium"
+    },
+    {
+      "title": "Dead Cells",
       "tiers": "PC Game Pass, Ultimate, Premium, Essential"
     },
     {
-      "title": "Aliens: Fireteam Elite",
+      "title": "Deep Rock Galactic Survivor",
       "tiers": "PC Game Pass, Ultimate, Premium"
     },
     {
-      "title": "Atlas Fallen: Reign Of Sand",
+      "title": "Frostpunk 2",
       "tiers": "PC Game Pass, Ultimate, Premium"
     },
     {
-      "title": "MENACE",
-      "tiers": "PC Game Pass"
+      "title": "Mullet Madjack",
+      "tiers": "PC Game Pass, Ultimate, Premium"
+    },
+    {
+      "title": "Spiritfarer",
+      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
+    },
+    {
+      "title": "Superliminal",
+      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
+    },
+    {
+      "title": "Train Sim World 5",
+      "tiers": "PC Game Pass, Ultimate, Premium"
     }
   ]
 }
