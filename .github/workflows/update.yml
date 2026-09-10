@@ -2,12 +2,7 @@ name: Aggiorna dati Game Pass
 
 on:
   schedule:
-    # Una volta al giorno, per ridurre al minimo l'impronta verso il sito
-    # sorgente e non rischiare di essere segnalati come traffico automatico.
     - cron: '0 6 * * *'
-  # Permette anche di far partire l'aggiornamento manualmente dal sito
-  # GitHub, ma usalo con parsimonia: troppe esecuzioni ravvicinate
-  # possono far scattare i sistemi anti-bot del sito sorgente.
   workflow_dispatch:
 
 permissions:
