@@ -15,31 +15,32 @@ import re
 import time
 from datetime import datetime, timezone
 
-import requests
+from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
-    "image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": "https://www.google.com/",
-    "Connection": "keep-alive",
-}
 
 BASE_URL = "https://www.xboxgamepasslist.com/"
 MAX_PAGES = 6  # limite di sicurezza per evitare loop infiniti
 
-_session = requests.Session()
-_session.headers.update(HEADERS)
+# Un solo browser condiviso per tutto lo script, per velocità.
+_playwright = sync_playwright().start()
+_browser = _playwright.chromium.launch()
+_page = _browser.new_page(
+    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
 
 
 def fetch_soup(url: str) -> BeautifulSoup:
-    time.sleep(2)
-    response = _session.get(url, timeout=20)
-    response.raise_for_status()
-    return BeautifulSoup(response.text, "html.parser")
+    time.sleep(1)
+    _page.goto(url, wait_until="networkidle", timeout=30000)
+    # Aspettiamo che la tabella dei giochi compaia davvero nella pagina
+    # (viene creata da JavaScript dopo il caricamento iniziale).
+    try:
+        _page.wait_for_selector("table", timeout=10000)
+    except Exception:
+        pass  # se non compare, il parsing sotto restituirà 0 righe
+    html = _page.content()
+    return BeautifulSoup(html, "html.parser")
 
 
 def looks_like_game_title(text: str) -> bool:
@@ -216,6 +217,9 @@ def main():
 
     print(f"Salvati: {len(with_date)} con data, {len(announced)} annunciati, "
           f"{len(leaving)} in uscita.")
+
+    _browser.close()
+    _playwright.stop()
 
 
 if __name__ == "__main__":
