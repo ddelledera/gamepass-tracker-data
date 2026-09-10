@@ -132,6 +132,38 @@ def scrape_coming_and_announced():
 GAME_PASS_TAG_PATTERN = re.compile(r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$")
 
 
+def get_article_publish_date(soup):
+    """Cerca la data di pubblicazione reale dell'articolo, provando i
+    posti più comuni dove i siti la mettono (meta tag standard)."""
+    meta_names = [
+        ("property", "article:published_time"),
+        ("property", "article:modified_time"),
+        ("name", "date"),
+    ]
+    for attr, value in meta_names:
+        tag = soup.find("meta", attrs={attr: value})
+        if tag and tag.get("content"):
+            try:
+                dt = datetime.fromisoformat(tag["content"].replace("Z", "+00:00"))
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                return dt
+            except ValueError:
+                continue
+
+    time_tag = soup.find("time")
+    if time_tag and time_tag.get("datetime"):
+        try:
+            dt = datetime.fromisoformat(time_tag["datetime"].replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt
+        except ValueError:
+            pass
+
+    return None
+
+
 def scrape_leaving_soon():
     index_soup = fetch_soup(LEAVING_INDEX_URL)
 
@@ -139,18 +171,36 @@ def scrape_leaving_soon():
     for a in index_soup.find_all("a", href=True):
         href = a["href"]
         if "/subscription-news/" in href and "leav" in href.lower():
-            candidate_links.append(href)
+            if href not in candidate_links:
+                candidate_links.append(href)
 
     print(f"[leaving] Trovati {len(candidate_links)} link candidati.")
     if not candidate_links:
         return []
 
-    article_link = candidate_links[0]
-    if article_link.startswith("/"):
-        article_link = "https://gg.deals" + article_link
-    print(f"[leaving] Uso l'articolo: {article_link}")
+    # Controlliamo la data di pubblicazione reale dei primi candidati
+    # (non ci fidiamo dell'ordine in cui compaiono nella pagina) e
+    # scegliamo quello più recente.
+    checked = []
+    for href in candidate_links[:4]:
+        full_url = "https://gg.deals" + href if href.startswith("/") else href
+        try:
+            candidate_soup = fetch_soup(full_url)
+        except Exception as e:
+            print(f"[leaving] Impossibile controllare {full_url}: {e}")
+            continue
+        pub_date = get_article_publish_date(candidate_soup)
+        print(f"[leaving] Candidato: {full_url} -> data: {pub_date}")
+        checked.append((pub_date, full_url, candidate_soup))
 
-    article_soup = fetch_soup(article_link)
+    # Ordiniamo per data (i None finiscono per ultimi) e prendiamo il più recente.
+    checked.sort(key=lambda item: item[0] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+
+    if not checked:
+        return []
+
+    _, article_link, article_soup = checked[0]
+    print(f"[leaving] Uso l'articolo più recente: {article_link}")
 
     leaving = []
     for element in article_soup.find_all(["li", "p", "strong"]):
