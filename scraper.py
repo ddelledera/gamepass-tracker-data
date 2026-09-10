@@ -1,13 +1,10 @@
 """
 Script di aggiornamento automatico per Game Pass Tracker.
 
-Scarica da xboxgamepasslist.com (un database indipendente dedicato al
-catalogo Xbox Game Pass) le liste di giochi "Coming Soon" e "Leaving
-Soon", le analizza, e salva tutto in un file JSON (upcoming_data.json)
-che l'app Flutter scarica direttamente.
-
-Pensato per girare automaticamente più volte al giorno tramite
-GitHub Actions.
+Scarica le pagine di gg.deals con i giochi in arrivo/annunciati/in uscita
+da Xbox Game Pass, usando un browser reale (Playwright) per aggirare il
+blocco anti-bot che il sito applica alle richieste HTTP "semplici".
+Salva tutto in upcoming_data.json, letto direttamente dall'app Flutter.
 """
 
 import json
@@ -18,10 +15,9 @@ from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://www.xboxgamepasslist.com/"
-MAX_PAGES = 6  # limite di sicurezza per evitare loop infiniti
+COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
+LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
 
-# Un solo browser condiviso per tutto lo script, per velocità.
 _playwright = sync_playwright().start()
 _browser = _playwright.chromium.launch()
 _page = _browser.new_page(
@@ -33,33 +29,43 @@ _page = _browser.new_page(
 def fetch_soup(url: str) -> BeautifulSoup:
     time.sleep(1)
     _page.goto(url, wait_until="networkidle", timeout=30000)
-    # Aspettiamo che la tabella dei giochi compaia davvero nella pagina
-    # (viene creata da JavaScript dopo il caricamento iniziale).
-    try:
-        _page.wait_for_selector("table", timeout=10000)
-    except Exception:
-        pass  # se non compare, il parsing sotto restituirà 0 righe
     html = _page.content()
     return BeautifulSoup(html, "html.parser")
 
 
 def looks_like_game_title(text: str) -> bool:
-    if not (2 <= len(text) <= 100):
+    """Filtro per scartare 'rumore' tipico dei siti (FAQ, link di menu,
+    testo promozionale) che finisce nei tag insieme ai veri titoli."""
+    if not (2 <= len(text) <= 80):
         return False
+
     lowered = text.lower()
     if "?" in text:
         return False
-    noise_starts = ("how to", "what is", "what are", "why", "when will")
+
+    noise_starts = (
+        "how to", "what is", "what are", "why", "when will", "where",
+        "regular price", "read more", "compare prices", "best price",
+        "buy ", "sign up", "subscribe", "follow us", "related",
+    )
     if lowered.startswith(noise_starts):
         return False
+
+    noise_contains = ("cd key", "activate", "cookie", "privacy policy")
+    if any(phrase in lowered for phrase in noise_contains):
+        return False
+
     return True
 
 
-def parse_exact_date(text: str):
-    """Es. 'Oct 6, 2026' -> datetime. Ritorna None se non è una data
-    esatta (es. 'TBA')."""
+def clean_date_text(text: str) -> str:
+    text = re.sub(r"\(\s*source\s*(,\s*source\s*)*\)", "", text, flags=re.IGNORECASE)
+    return text.strip(" -–—\t")
+
+
+def parse_date(text: str):
     text = text.strip()
-    for fmt in ("%b %d, %Y", "%B %d, %Y"):
+    for fmt in ("%B %d, %Y", "%b %d, %Y", "%d %B %Y"):
         try:
             return datetime.strptime(text, fmt)
         except ValueError:
@@ -67,129 +73,110 @@ def parse_exact_date(text: str):
     return None
 
 
-def parse_table_rows(soup):
-    """Analizza la tabella principale della pagina e restituisce una
-    lista di dizionari grezzi: title, status, added, leaving."""
-    rows_data = []
-    table = soup.find("table")
-    if table is None:
-        return rows_data
-
-    for row in table.find_all("tr"):
-        cells = row.find_all("td")
-        if len(cells) < 7:
-            continue
-
-        game_cell = cells[0]
-        link = game_cell.find("a")
-        if link is None:
-            continue
-        title = link.get_text(strip=True)
-        if not title or not looks_like_game_title(title):
-            continue
-
-        status = cells[4].get_text(strip=True)
-        added = cells[5].get_text(strip=True)
-        leaving = cells[6].get_text(strip=True)
-
-        rows_data.append({
-            "title": title,
-            "status": status,
-            "added": added,
-            "leaving": leaving,
-        })
-
-    return rows_data
-
-
-def fetch_all_pages(status_filter: str, extra_query: str = ""):
-    """Scarica tutte le pagine di risultati per un filtro di stato,
-    seguendo la paginazione finché ce n'è (fino a MAX_PAGES)."""
-    all_rows = []
-    for page in range(1, MAX_PAGES + 1):
-        if page == 1:
-            url = f"{BASE_URL}?status={status_filter}{extra_query}"
-        else:
-            url = f"{BASE_URL}?status={status_filter}{extra_query}&page={page}"
-
-        try:
-            soup = fetch_soup(url)
-        except Exception as e:
-            print(f"[{status_filter}] Errore pagina {page}: {e}")
-            break
-
-        rows = parse_table_rows(soup)
-        print(f"[{status_filter}] Pagina {page}: {len(rows)} righe trovate.")
-        if not rows:
-            break
-        all_rows.extend(rows)
-
-        # Se non c'è un link "Next" nella pagina, ci fermiamo qui.
-        next_link = soup.find("a", string=re.compile(r"^\s*Next\s*$", re.IGNORECASE))
-        if next_link is None:
-            break
-
-    return all_rows
-
-
 def scrape_coming_and_announced():
-    rows = fetch_all_pages("COMING_SOON")
+    soup = fetch_soup(COMING_URL)
 
     with_date = []
     announced = []
-    seen = set()
+    seen_titles = set()
 
-    for row in rows:
-        title = row["title"]
-        if title in seen:
-            continue
-        seen.add(title)
+    for heading in soup.find_all(re.compile("^h[1-4]$")):
+        heading_text = heading.get_text(strip=True).lower()
 
-        added = row["added"]
-        if not added or added.upper() == "TBA":
-            announced.append({"title": title})
+        matches_keyword = "coming" in heading_text or "announced" in heading_text
+        matches_year = re.search(r"\b20\d{2}\b", heading_text) is not None
+        if not (matches_keyword or matches_year):
             continue
 
-        parsed = parse_exact_date(added)
-        if parsed:
-            with_date.append({
-                "title": title,
-                "exactDate": parsed.strftime("%Y-%m-%d"),
-            })
-        else:
-            with_date.append({"title": title, "approxLabel": added})
+        lists_found = []
+        sibling = heading.find_next_sibling()
+        steps = 0
+        while sibling is not None and not re.match(r"^h[1-4]$", sibling.name or "") and steps < 30:
+            if sibling.name == "ul":
+                lists_found.append(sibling)
+            sibling = sibling.find_next_sibling()
+            steps += 1
+
+        for ul in lists_found:
+            for li in ul.find_all("li"):
+                raw_text = li.get_text(" ", strip=True)
+                if not raw_text:
+                    continue
+
+                parts = re.split(r"\s[-–—]\s", raw_text, maxsplit=1)
+                title = parts[0].strip()
+                date_text = clean_date_text(parts[1]) if len(parts) > 1 else ""
+
+                if (not title or title in seen_titles
+                        or not looks_like_game_title(title)):
+                    continue
+                seen_titles.add(title)
+
+                if not date_text or date_text.upper() == "TBC":
+                    announced.append({"title": title})
+                    continue
+
+                parsed = parse_date(date_text)
+                if parsed:
+                    with_date.append({
+                        "title": title,
+                        "exactDate": parsed.strftime("%Y-%m-%d"),
+                    })
+                else:
+                    with_date.append({"title": title, "approxLabel": date_text})
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
 
 
+GAME_PASS_TAG_PATTERN = re.compile(r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$")
+
+
 def scrape_leaving_soon():
-    rows = fetch_all_pages("LEAVING_SOON", extra_query="&sort=leaving-soon")
+    index_soup = fetch_soup(LEAVING_INDEX_URL)
+
+    candidate_links = []
+    for a in index_soup.find_all("a", href=True):
+        href = a["href"]
+        if "/subscription-news/" in href and "leav" in href.lower():
+            candidate_links.append(href)
+
+    print(f"[leaving] Trovati {len(candidate_links)} link candidati.")
+    if not candidate_links:
+        return []
+
+    article_link = candidate_links[0]
+    if article_link.startswith("/"):
+        article_link = "https://gg.deals" + article_link
+    print(f"[leaving] Uso l'articolo: {article_link}")
+
+    article_soup = fetch_soup(article_link)
 
     leaving = []
-    seen = set()
-
-    for row in rows:
-        title = row["title"]
-        if title in seen:
+    for element in article_soup.find_all(["li", "p", "strong"]):
+        text = element.get_text(" ", strip=True)
+        match = GAME_PASS_TAG_PATTERN.match(text)
+        if not match:
             continue
-        seen.add(title)
 
-        leaving_date = row["leaving"]
-        if not leaving_date or leaving_date.upper() == "TBA":
-            continue  # senza data non è utile in questa sezione
+        title = match.group(1).strip(" -–—:")
+        tiers = match.group(2).strip()
 
-        parsed = parse_exact_date(leaving_date)
-        if parsed:
-            leaving.append({
-                "title": title,
-                "exactDate": parsed.strftime("%Y-%m-%d"),
-            })
-        else:
-            leaving.append({"title": title, "approxLabel": leaving_date})
+        if not looks_like_game_title(title) or len(title.split()) > 8:
+            continue
 
-    print(f"[leaving] Trovati: {len(leaving)}")
-    return leaving[:30]  # limite di sicurezza
+        leaving.append({"title": title, "tiers": tiers})
+
+    print(f"[leaving] Giochi riconosciuti tramite tag Game Pass: {len(leaving)}")
+
+    seen = set()
+    unique_leaving = []
+    for game in leaving:
+        if game["title"] not in seen:
+            seen.add(game["title"])
+            unique_leaving.append(game)
+
+    return unique_leaving[:20]
 
 
 def main():
