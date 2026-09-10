@@ -2,10 +2,12 @@ name: Aggiorna dati Game Pass
 
 on:
   schedule:
-    # Ogni 6 ore (alle 00:00, 06:00, 12:00, 18:00 UTC).
-    - cron: '0 */6 * * *'
+    # Una volta al giorno, per ridurre al minimo l'impronta verso il sito
+    # sorgente e non rischiare di essere segnalati come traffico automatico.
+    - cron: '0 6 * * *'
   # Permette anche di far partire l'aggiornamento manualmente dal sito
-  # GitHub, utile per testare senza aspettare il prossimo giro.
+  # GitHub, ma usalo con parsimonia: troppe esecuzioni ravvicinate
+  # possono far scattare i sistemi anti-bot del sito sorgente.
   workflow_dispatch:
 
 permissions:
@@ -24,9 +26,7 @@ jobs:
           python-version: '3.12'
 
       - name: Installa le dipendenze
-        run: |
-          pip install playwright beautifulsoup4
-          playwright install --with-deps chromium
+        run: pip install requests beautifulsoup4
 
       - name: Esegui lo script di aggiornamento
         run: python scraper.py
