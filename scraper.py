@@ -25,6 +25,8 @@ ZENROWS_API_KEY = os.environ.get("ZENROWS_API_KEY", "")
 ZENROWS_ENDPOINT = "https://api.zenrows.com/v1/"
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
+XGPL_BASE_URL = "https://www.xboxgamepasslist.com/"
+XGPL_MAX_PAGES = 6
 LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
 WAVE_INDEX_URL = "https://gg.deals/news/subscriptions/"
 
@@ -84,48 +86,110 @@ def parse_date(text: str):
     return None
 
 
-ENTRY_PATTERN = re.compile(r"^(.+?)\s*[-–—]\s*(.+?)\s*\(\s*source", re.IGNORECASE)
+DATE_PATTERN = re.compile(
+    r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+"
+    r"\d{1,2},?\s+\d{4}\b|\bTBA\b",
+    re.IGNORECASE,
+)
+
+
+def find_nearest_date(link_tag):
+    """Risale i contenitori "genitori" del link del titolo, finche' non
+    trova un testo con una data riconoscibile (o 'TBA')."""
+    node = link_tag
+    for _ in range(6):
+        node = node.parent
+        if node is None:
+            break
+        text = node.get_text(" ", strip=True)
+        match = DATE_PATTERN.search(text)
+        if match:
+            return match.group(0)
+    return None
+
+
+def parse_xgpl_date(text: str):
+    text = text.strip().replace(",", "")
+    for fmt in ("%b %d %Y", "%B %d %Y"):
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def extract_xgpl_games(soup):
+    results = []
+    seen_titles = set()
+
+    for link in soup.find_all("a"):
+        title = link.get_text(strip=True)
+        if not title or title in seen_titles or not looks_like_game_title(title):
+            continue
+
+        date_text = find_nearest_date(link)
+        if date_text is None:
+            continue
+
+        seen_titles.add(title)
+        results.append({"title": title, "date_text": date_text})
+
+    return results
+
+
+def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
+    all_games = []
+    for page in range(1, XGPL_MAX_PAGES + 1):
+        if page == 1:
+            url = f"{XGPL_BASE_URL}?status={status_filter}{extra_query}"
+        else:
+            url = f"{XGPL_BASE_URL}?status={status_filter}{extra_query}&page={page}"
+
+        try:
+            soup = fetch_soup(url, js_render=True)
+        except Exception as e:
+            print(f"[coming] Errore pagina {page}: {e}")
+            break
+
+        games = extract_xgpl_games(soup)
+        print(f"[coming] Pagina {page}: {len(games)} giochi trovati.")
+        if not games:
+            break
+        all_games.extend(games)
+
+        next_link = soup.find("a", string=re.compile(r"^\s*Next\s*$", re.IGNORECASE))
+        if next_link is None:
+            break
+
+    return all_games
 
 
 def scrape_coming_and_announced():
     """
-    Torniamo alla pagina "lista completa" (COMING_URL), questa volta con
-    la modalita' antibot di ZenRows attiva: un sistema dedicato a
-    superare protezioni avanzate (diverso dal semplice proxy+rendering
-    JS usato finora), pensato apposta per casi come "cloaking" (il sito
-    che restituisce contenuto ridotto a chi sospetta essere un bot).
+    Usiamo xboxgamepasslist.com (un sito che non ci ha mai bloccato)
+    instradato tramite ZenRows per il rendering JavaScript, e una lettura
+    "senza struttura fissa": cerchiamo i link dei titoli dei giochi e la
+    prima data riconoscibile nel testo del loro contenitore piu' vicino,
+    invece di assumere una tabella HTML precisa.
     """
-    soup = fetch_soup(COMING_URL, js_render=True, antibot=True)
-
-    page_text = soup.get_text(" ", strip=True)
-    print(f"[coming] Lunghezza testo pagina: {len(page_text)} caratteri.")
-    print(f"[coming] Contiene '(source': {'(source' in page_text.lower()}")
+    games = fetch_xgpl_pages("COMING_SOON")
 
     with_date = []
     announced = []
-    seen_titles = set()
+    seen = set()
 
-    for element in soup.find_all(["li", "p", "strong"]):
-        raw_text = element.get_text(" ", strip=True)
-        if not raw_text or "(source" not in raw_text.lower():
+    for game in games:
+        title = game["title"]
+        if title in seen:
             continue
+        seen.add(title)
 
-        match = ENTRY_PATTERN.match(raw_text)
-        if not match:
-            continue
-
-        title = match.group(1).strip(" -–—:")
-        date_text = clean_date_text(match.group(2))
-
-        if not title or title in seen_titles or not looks_like_game_title(title):
-            continue
-        seen_titles.add(title)
-
-        if not date_text or date_text.upper() == "TBC":
+        date_text = game["date_text"]
+        if date_text.upper() == "TBA":
             announced.append({"title": title})
             continue
 
-        parsed = parse_date(date_text)
+        parsed = parse_xgpl_date(date_text)
         if parsed:
             with_date.append({
                 "title": title,
