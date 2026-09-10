@@ -1,6 +1,23 @@
 {
-  "updatedAt": "2026-09-10T11:30:11.057791+00:00",
+  "updatedAt": "2026-09-10T11:50:57.903036+00:00",
   "upcomingWithDate": [],
   "upcomingAnnounced": [],
-  "leavingSoon": []
+  "leavingSoon": [
+    {
+      "title": "Firewatch",
+      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
+    },
+    {
+      "title": "Aliens: Fireteam Elite",
+      "tiers": "PC Game Pass, Ultimate, Premium"
+    },
+    {
+      "title": "Atlas Fallen: Reign Of Sand",
+      "tiers": "PC Game Pass, Ultimate, Premium"
+    },
+    {
+      "title": "MENACE",
+      "tiers": "PC Game Pass"
+    }
+  ]
 }
