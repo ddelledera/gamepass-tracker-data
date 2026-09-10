@@ -85,6 +85,13 @@ ENTRY_PATTERN = re.compile(r"^(.+?)\s*[-–—]\s*(.+?)\s*\(\s*source", re.IGNOR
 def scrape_coming_and_announced():
     soup = fetch_soup(COMING_URL)
 
+    page_text = soup.get_text(" ", strip=True)
+    print(f"[coming] Lunghezza testo pagina: {len(page_text)} caratteri.")
+    print(f"[coming] Titolo pagina: {soup.title.get_text(strip=True) if soup.title else 'ASSENTE'}")
+    print(f"[coming] Contiene 'Game Pass': {'Game Pass' in page_text}")
+    print(f"[coming] Contiene '(source': {'(source' in page_text.lower()}")
+    print(f"[coming] Elementi li/p/strong trovati: {len(soup.find_all(['li', 'p', 'strong']))}")
+
     with_date = []
     announced = []
     seen_titles = set()
@@ -165,7 +172,9 @@ def scrape_leaving_soon():
     candidate_links = []
     for a in index_soup.find_all("a", href=True):
         href = a["href"]
-        if "/subscription-news/" in href and "leav" in href.lower():
+        if "/subscription-news/" in href and (
+            "leav" in href.lower() or "losing" in href.lower()
+        ):
             if href not in candidate_links:
                 candidate_links.append(href)
 
@@ -174,7 +183,7 @@ def scrape_leaving_soon():
         return []
 
     checked = []
-    for href in candidate_links[:3]:
+    for href in candidate_links[:5]:
         full_url = "https://gg.deals" + href if href.startswith("/") else href
         try:
             candidate_soup = fetch_soup(full_url)
