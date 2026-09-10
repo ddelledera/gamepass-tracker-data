@@ -1,7 +1,527 @@
 {
-  "updatedAt": "2026-09-10T12:24:09.372273+00:00",
-  "upcomingWithDate": [],
-  "upcomingAnnounced": [],
+  "updatedAt": "2026-09-10T14:19:47.168750+00:00",
+  "upcomingWithDate": [
+    {
+      "title": "XGPXbox Game Pass Games List",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Games List",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "New",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Leaving Soon",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Best",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Plans",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Calendar",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Blog",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Search Games",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "PC Games",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Cloud Games",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "All games table",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Popular searches",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Catalog guide",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "New and leaving",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Plan and platform guide",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "FAQ",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "New This Month",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Coming Soon",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Console Games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Best Rated",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Short Games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Console games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "PC Game Pass games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Cloud games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Ultimate games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Premium games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Essential games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Day-one games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Coming soon",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Leaving soon",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Best rated",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Gears of War: E-Day",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Minecraft Dungeons II",
+      "exactDate": "2026-09-29"
+    },
+    {
+      "title": "RuneScape: Dragonwilds",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "The Royal Writ",
+      "exactDate": "2026-09-10"
+    },
+    {
+      "title": "Virtua Fighter 5 R.E.V.O. World Stage",
+      "exactDate": "2026-09-10"
+    },
+    {
+      "title": "SpeedRunners 2: King of Speed",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Resonance: A Plague Tale Legacy",
+      "exactDate": "2026-08-27"
+    },
+    {
+      "title": "Blood Dungeon",
+      "exactDate": "2026-08-25"
+    },
+    {
+      "title": "Vapor World: Over The Mind (Game Preview)",
+      "exactDate": "2026-08-19"
+    },
+    {
+      "title": "Sandustry (Game Preview)",
+      "exactDate": "2026-08-13"
+    },
+    {
+      "title": "Beast of Reincarnation",
+      "exactDate": "2026-08-04"
+    },
+    {
+      "title": "Corsair Cove",
+      "exactDate": "2026-07-31"
+    },
+    {
+      "title": "Mistfall Hunter",
+      "exactDate": "2026-07-30"
+    },
+    {
+      "title": "Halo: Campaign Evolved - Standard Edition",
+      "exactDate": "2026-07-28"
+    },
+    {
+      "title": "Shift At Midnight",
+      "exactDate": "2026-07-22"
+    },
+    {
+      "title": "Fogpiercer",
+      "exactDate": "2026-07-17"
+    },
+    {
+      "title": "Denshattack!",
+      "exactDate": "2026-07-15"
+    },
+    {
+      "title": "View new games",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "View coming soon",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "View leaving soon",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Decision helperBest GamesSort by score, platform and play time.",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "DatesCalendarView additions and departures together.",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Leaving Soon Tracker",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "Cricket 24Ultimate, Premium · Game CatalogCONSOLE, PC, CLOUDLeaving Sep 15, 2026",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "Crusader Kings IIIUltimate, Pc, Premium · Game CatalogCONSOLE, PCLeaving TBA",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "Crusader Kings IIIUltimate, Premium · Game CatalogCONSOLE, PC, CLOUDLeaving TBA",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "EA SPORTS FC™ 24Ultimate, Pc · Ea PlayCONSOLE, PCLeaving TBA",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "EA SPORTS FC™ 24 Xbox OneUltimate · Ea PlayCONSOLE, PC, CLOUDLeaving TBA",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "EA SPORTS FC™ 24 Xbox Series X|SUltimate · Ea PlayCONSOLE, PC, CLOUDLeaving TBA",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "New Games",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "ShelldiverUltimate, Pc, Premium · Game CatalogCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Wolfenstein 3DUltimate, Premium · Game CatalogCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Corsair CoveUltimate, Pc · Day One, Game CatalogPCComing Jul 31, 2026",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Hell is UsUltimate, Pc, Premium · Game CatalogCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Tears of Metal (Game Preview)Ultimate, Pc · Day OnePCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FixForceUltimate, Pc, Premium · Game CatalogCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FogpiercerUltimate, Pc · Day One, Game CatalogPCComing Jul 17, 2026",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Ascend to ZEROUltimate, Pc · Day OneCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "The Crew MotorfestUltimate, Pc · Game CatalogCONSOLE, PCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Anno 1800™Ultimate, Pc, Premium · Game CatalogCONSOLE, PCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Assassin's Creed OriginsUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Assassin's Creed® OdysseyUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Assassin's Creed® ValhallaUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Assassin’s Creed® MirageUltimate, Pc · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Avatar: Frontiers of PandoraUltimate, Pc · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "BrawlhallaUltimate, Pc, Premium, Essential · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FAR CRY 3Ultimate · Game CatalogCONSOLE, PCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FAR CRY 3 BLOOD DRAGONUltimate · Game CatalogCONSOLE, PCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FAR CRY 4Ultimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Far Cry New DawnUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "FAR CRY PRIMALUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Far Cry® 5Ultimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Far Cry® 6Ultimate, Pc, Premium · Game CatalogCONSOLE, PCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "For Honor StandardUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Immortals Fenyx Rising™Ultimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "MONOPOLY 2024Ultimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Prince of Persia The Lost CrownUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Skull and BonesUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Star Wars OutlawsUltimate, Pc · Game CatalogCONSOLE, PC, CLOUDNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "STEEPUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "The Crew® 2Ultimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Tom Clancy's Ghost Recon® BreakpointUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Tom Clancy’s Rainbow Six® ExtractionUltimate · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Tom Clancy’s The Division 2Ultimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Watch Dogs®: LegionUltimate, Pc, Premium · Game CatalogPCNew this month",
+      "exactDate": "2026-09-03"
+    },
+    {
+      "title": "Compare Plans",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "UltimateBroadest tracked plan access",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "PCWindows catalog filtering",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "CloudStreamable game records",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Day oneLaunch-day catalog entries",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Xbox catalog",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Xbox Wire",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "contact@xboxgamepasslist.com",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "About",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Contact",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Privacy",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Terms",
+      "exactDate": "2026-07-03"
+    },
+    {
+      "title": "Sitemap",
+      "exactDate": "2026-07-03"
+    }
+  ],
+  "upcomingAnnounced": [
+    {
+      "title": "Aniimo"
+    },
+    {
+      "title": "Bluey's Happy Snaps"
+    },
+    {
+      "title": "Dune: Awakening"
+    },
+    {
+      "title": "Fable"
+    },
+    {
+      "title": "Persona 4 Revival"
+    },
+    {
+      "title": "STRANGER THAN HEAVEN"
+    },
+    {
+      "title": "Well Dweller"
+    },
+    {
+      "title": "Best Games Guide"
+    },
+    {
+      "title": "Alice: Madness Returns™Ultimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Battlefield™ 1 RevolutionUltimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Battlefield™ V Year 2 EditionUltimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Bluey's Happy SnapsUltimate · Game CatalogCONSOLE, PCComing TBA"
+    },
+    {
+      "title": "Dungeon Keeper™ 2Ultimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "EA SPORTS FC™ 26 - PCUltimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Far Cry New DawnUltimate, Pc, Premium · Game CatalogCONSOLE, PC"
+    },
+    {
+      "title": "Medal of Honor Airborne™Ultimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Minecraft Dungeons IIUltimate · Game CatalogCONSOLE, PCComing Sep 29, 2026"
+    },
+    {
+      "title": "Populous™: The BeginningUltimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "RAYMAN LEGENDSUltimate · Game CatalogCONSOLE, PC"
+    },
+    {
+      "title": "StarCraft® RemasteredUltimate, Pc, Premium, Essential · Game CatalogCONSOLE, PC"
+    },
+    {
+      "title": "The Sims™ 3 Starter PackUltimate, Pc · Ea PlayCONSOLE, PC"
+    },
+    {
+      "title": "Watch Dogs®2Ultimate, Pc, Premium · Game CatalogCONSOLE, PC"
+    },
+    {
+      "title": "ZOMBIUltimate · Game CatalogCONSOLE, PC"
+    },
+    {
+      "title": "AniimoUltimate · Game CatalogCONSOLE, PCComing TBA"
+    },
+    {
+      "title": "It Takes Two - Digital VersionUltimate · Ea PlayCONSOLE, PC, CLOUD"
+    },
+    {
+      "title": "Mass Effect 2Ultimate · Ea PlayCONSOLE, PC"
+    }
+  ],
   "leavingSoon": [
     {
       "title": "Commandos: Origins",
