@@ -95,14 +95,22 @@ COMING_STATUS_PATTERN = re.compile(
 
 def find_nearest_date(link_tag):
     """Risale i contenitori "genitori" del link del titolo, finche' non
-    trova il testo di stato specifico "Coming <data>" o "Coming TBA" —
-    non una data qualsiasi (che potrebbe appartenere a un altro stato,
-    come "Leaving" o "New this month")."""
+    trova il testo di stato specifico "Coming <data>" o "Coming TBA".
+    Ci fermiamo non appena il contenitore include anche altri link:
+    vorrebbe dire che abbiamo superato i confini della "scheda" di
+    questo singolo gioco e stiamo per leggere per errore la data di un
+    gioco vicino diverso nella pagina."""
     node = link_tag
     for _ in range(6):
         node = node.parent
         if node is None:
             break
+
+        links_in_node = node.find_all("a", href=True)
+        distinct_hrefs = {a["href"] for a in links_in_node}
+        if len(distinct_hrefs) > 1:
+            break
+
         text = node.get_text(" ", strip=True)
         match = COMING_STATUS_PATTERN.search(text)
         if match:
