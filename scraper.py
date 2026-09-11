@@ -86,25 +86,27 @@ def parse_date(text: str):
     return None
 
 
-DATE_PATTERN = re.compile(
-    r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+"
-    r"\d{1,2},?\s+\d{4}\b|\bTBA\b",
+COMING_STATUS_PATTERN = re.compile(
+    r"Coming\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?"
+    r"\s+\d{1,2},?\s+\d{4}|TBA)",
     re.IGNORECASE,
 )
 
 
 def find_nearest_date(link_tag):
     """Risale i contenitori "genitori" del link del titolo, finche' non
-    trova un testo con una data riconoscibile (o 'TBA')."""
+    trova il testo di stato specifico "Coming <data>" o "Coming TBA" —
+    non una data qualsiasi (che potrebbe appartenere a un altro stato,
+    come "Leaving" o "New this month")."""
     node = link_tag
     for _ in range(6):
         node = node.parent
         if node is None:
             break
         text = node.get_text(" ", strip=True)
-        match = DATE_PATTERN.search(text)
+        match = COMING_STATUS_PATTERN.search(text)
         if match:
-            return match.group(0)
+            return match.group(1)
     return None
 
 
@@ -118,13 +120,43 @@ def parse_xgpl_date(text: str):
     return None
 
 
+TIER_SPLIT_PATTERN = re.compile(
+    r"(?=Ultimate|Premium|Essential|Ea Play|Game Catalog)"
+)
+
+# Voci del menu/interfaccia del sito osservate direttamente nei risultati
+# reali: non sono giochi, vanno scartate a prescindere.
+XGPL_NAV_NOISE = {
+    "games list", "new", "leaving soon", "best", "plans", "calendar",
+    "blog", "search games", "pc games", "cloud games", "all games table",
+    "popular searches", "catalog guide", "new and leaving",
+    "plan and platform guide", "faq", "new this month", "coming soon",
+    "console games", "best rated", "short games", "console games",
+    "pc game pass games", "cloud games", "ultimate games", "premium games",
+    "essential games", "day-one games", "compare plans", "xbox catalog",
+    "xbox wire", "about", "contact", "privacy", "terms", "sitemap",
+    "view new games", "view coming soon", "view leaving soon",
+    "best games guide", "leaving soon tracker", "new games",
+}
+
+
+def clean_xgpl_title(raw_title: str) -> str:
+    """Rimuove le informazioni di piano/piattaforma che il sito attacca
+    senza spazio subito dopo il titolo (es. 'Cricket 24Ultimate, ...')."""
+    return TIER_SPLIT_PATTERN.split(raw_title, maxsplit=1)[0].strip()
+
+
 def extract_xgpl_games(soup):
     results = []
     seen_titles = set()
 
     for link in soup.find_all("a"):
-        title = link.get_text(strip=True)
+        raw_title = link.get_text(strip=True)
+        title = clean_xgpl_title(raw_title)
+
         if not title or title in seen_titles or not looks_like_game_title(title):
+            continue
+        if title.lower() in XGPL_NAV_NOISE:
             continue
 
         date_text = find_nearest_date(link)
