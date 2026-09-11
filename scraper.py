@@ -162,6 +162,8 @@ def extract_xgpl_games(soup):
 
 def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
     all_games = []
+    consecutive_link_less_pages = 0
+
     for page in range(1, XGPL_MAX_PAGES + 1):
         if page == 1:
             url = f"{XGPL_BASE_URL}?status={status_filter}{extra_query}"
@@ -174,17 +176,24 @@ def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
             print(f"[coming] Errore pagina {page}: {e}")
             break
 
+        total_links = len(soup.find_all("a"))
         games = extract_xgpl_games(soup)
-        print(f"[coming] Pagina {page}: {len(games)} giochi trovati.")
+        print(f"[coming] Pagina {page}: {len(games)} giochi trovati "
+              f"({total_links} link totali sulla pagina).")
         all_games.extend(games)
 
-        # Continuiamo finche' esiste un link "Next": anche se QUESTA
-        # pagina non aveva giochi che passano il nostro filtro, quelle
-        # successive potrebbero averne (il nostro filtro riguarda lo
-        # stato del gioco, non la presenza di contenuto sulla pagina).
-        next_link = soup.find("a", string=re.compile(r"^\s*Next\s*$", re.IGNORECASE))
-        if next_link is None:
-            break
+        # Non ci fidiamo di riconoscere un pulsante "pagina successiva"
+        # specifico (potrebbe essere un'icona, non testo "Next"): ci
+        # fermiamo solo se la pagina risulta praticamente vuota per due
+        # volte di fila, segno che abbiamo superato l'ultima pagina vera.
+        if total_links < 10:
+            consecutive_link_less_pages += 1
+            if consecutive_link_less_pages >= 2:
+                break
+        else:
+            consecutive_link_less_pages = 0
+
+    return all_games
 
     return all_games
 
