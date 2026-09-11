@@ -1,17 +1,166 @@
 {
-  "updatedAt": "2026-09-11T09:39:12.125293+00:00",
+  "updatedAt": "2026-09-11T10:12:10.776414+00:00",
   "upcomingWithDate": [
     {
-      "title": "Minecraft Dungeons II",
+      "title": "Game",
+      "approxLabel": "Date"
+    },
+    {
+      "title": "Vapor World: Over The Mind",
+      "approxLabel": "June 2026"
+    },
+    {
+      "title": "RuneScape: Dragonwilds",
+      "exactDate": "2026-09-15"
+    },
+    {
+      "title": "Dune: Awakening",
+      "exactDate": "2026-09-22"
+    },
+    {
+      "title": "Well Dweller",
+      "exactDate": "2026-09-22"
+    },
+    {
+      "title": "Mad King Redemption",
+      "exactDate": "2026-09-23"
+    },
+    {
+      "title": "Minecraft Dungeons 2",
       "exactDate": "2026-09-29"
+    },
+    {
+      "title": "Gears of War: E-Day",
+      "exactDate": "2026-10-06"
+    },
+    {
+      "title": "Echo Weaver",
+      "exactDate": "2026-10-08"
+    },
+    {
+      "title": "Deep Dish Dungeon",
+      "exactDate": "2026-10-13"
+    },
+    {
+      "title": "Valor Mortis",
+      "exactDate": "2026-10-13"
+    },
+    {
+      "title": "Beyond These Stars",
+      "exactDate": "2026-10-15"
+    },
+    {
+      "title": "The Seance of Blake Manor",
+      "exactDate": "2026-10-27"
+    },
+    {
+      "title": "Terrible Lizards",
+      "exactDate": "2026-10-29"
+    },
+    {
+      "title": "Gravhounds",
+      "exactDate": "2026-11-02"
+    },
+    {
+      "title": "Hela: Of Mice & Magic",
+      "exactDate": "2026-12-01"
+    },
+    {
+      "title": "Dumpster Gang",
+      "approxLabel": "December 2026"
+    },
+    {
+      "title": "There Are No Ghosts At The Grand",
+      "approxLabel": "December 2026"
     }
   ],
   "upcomingAnnounced": [
     {
+      "title": "Armatus"
+    },
+    {
+      "title": "At Fate's End"
+    },
+    {
+      "title": "Awaysis"
+    },
+    {
       "title": "Bluey's Happy Snaps"
     },
     {
-      "title": "Aniimo"
+      "title": "Bushiden"
+    },
+    {
+      "title": "Cities: Skylines 2"
+    },
+    {
+      "title": "DayZ: Badlands"
+    },
+    {
+      "title": "Erosion"
+    },
+    {
+      "title": "Escape Academy 2"
+    },
+    {
+      "title": "Forever Ago"
+    },
+    {
+      "title": "Freestyle Football 2"
+    },
+    {
+      "title": "Grave Seasons"
+    },
+    {
+      "title": "Harmonium: The Musical"
+    },
+    {
+      "title": "Manor Lords"
+    },
+    {
+      "title": "Neon Abyss 2"
+    },
+    {
+      "title": "Nirvana Noir"
+    },
+    {
+      "title": "Raji: Kaliyuga"
+    },
+    {
+      "title": "Screenbound"
+    },
+    {
+      "title": "She Dreams Elsewhere"
+    },
+    {
+      "title": "Sleight of Hand"
+    },
+    {
+      "title": "Snap & Grab"
+    },
+    {
+      "title": "Tanuki Pon's Summer"
+    },
+    {
+      "title": "The Eternal Life Of Goldman"
+    },
+    {
+      "title": "Tropico 7"
+    },
+    {
+      "title": "Vaunted"
+    },
+    {
+      "title": "Way To The Woods"
+    },
+    {
+      "title": "What Goes Up"
+    },
+    {
+      "title": "Wildekin"
+    },
+    {
+      "title": "Witchbrook"
     }
   ],
   "leavingSoon": [
