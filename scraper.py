@@ -26,7 +26,7 @@ ZENROWS_ENDPOINT = "https://api.zenrows.com/v1/"
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
 XGPL_BASE_URL = "https://www.xboxgamepasslist.com/"
-XGPL_MAX_PAGES = 6
+XGPL_MAX_PAGES = 15
 LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
 WAVE_INDEX_URL = "https://gg.deals/news/subscriptions/"
 
@@ -176,10 +176,12 @@ def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
 
         games = extract_xgpl_games(soup)
         print(f"[coming] Pagina {page}: {len(games)} giochi trovati.")
-        if not games:
-            break
         all_games.extend(games)
 
+        # Continuiamo finche' esiste un link "Next": anche se QUESTA
+        # pagina non aveva giochi che passano il nostro filtro, quelle
+        # successive potrebbero averne (il nostro filtro riguarda lo
+        # stato del gioco, non la presenza di contenuto sulla pagina).
         next_link = soup.find("a", string=re.compile(r"^\s*Next\s*$", re.IGNORECASE))
         if next_link is None:
             break
@@ -200,6 +202,7 @@ def scrape_coming_and_announced():
     with_date = []
     announced = []
     seen = set()
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
 
     for game in games:
         title = game["title"]
@@ -214,6 +217,11 @@ def scrape_coming_and_announced():
 
         parsed = parse_xgpl_date(date_text)
         if parsed:
+            # Il sito usa "Coming <data>" anche per giochi gia' usciti
+            # (probabilmente indica quando sono stati aggiunti, non
+            # quando arriveranno): scartiamo le date nel passato.
+            if parsed.date() < today.date():
+                continue
             with_date.append({
                 "title": title,
                 "exactDate": parsed.strftime("%Y-%m-%d"),
