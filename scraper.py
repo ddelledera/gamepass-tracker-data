@@ -27,8 +27,24 @@ ZENROWS_ENDPOINT = "https://api.zenrows.com/v1/"
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
 XGPL_BASE_URL = "https://www.xboxgamepasslist.com/"
 XGPL_MAX_PAGES = 15
+PUREXBOX_URL = "https://www.purexbox.com/guides/xbox-game-pass-in-2026-the-full-list-of-everything-announced-so-far"
 LEAVING_INDEX_URL = "https://gg.deals/news/games-leaving-game-pass/"
 WAVE_INDEX_URL = "https://gg.deals/news/subscriptions/"
+
+
+def fetch_soup_direct(url: str) -> BeautifulSoup:
+    """Richiesta HTTP semplice, senza passare da ZenRows: piu' veloce e
+    gratuita, da provare per prima sui siti che potrebbero non avere
+    bisogno di un servizio anti-bot dedicato."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    response = requests.get(url, headers=headers, timeout=20)
+    response.raise_for_status()
+    return BeautifulSoup(response.text, "html.parser")
 
 
 def fetch_soup(url: str, js_render: bool = True, antibot: bool = False) -> BeautifulSoup:
@@ -198,48 +214,98 @@ def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
     return all_games
 
 
+def parse_purexbox_date(date_text: str, today_year: int):
+    """Analizza le date della tabella Pure Xbox nei loro vari formati:
+    'January 6, 2026' (esatta), 'June 2026 TBD' (mese+anno), 'December
+    2026' (mese+anno), 'TBD' (nessuna data)."""
+    text = date_text.strip()
+
+    if text.upper() == "TBD":
+        return None, None
+
+    # Formato "Month YYYY TBD" -> trattiamo come approssimativa
+    cleaned = re.sub(r"\s*TBD\s*$", "", text, flags=re.IGNORECASE).strip()
+
+    for fmt in ("%B %d, %Y", "%B %d. %Y"):
+        try:
+            return datetime.strptime(cleaned, fmt), None
+        except ValueError:
+            continue
+
+    # Formato "Month YYYY" (solo mese e anno, senza giorno preciso)
+    for fmt in ("%B %Y",):
+        try:
+            parsed = datetime.strptime(cleaned, fmt)
+            return None, cleaned  # lo trattiamo come approssimativo
+        except ValueError:
+            continue
+
+    return None, cleaned if cleaned else None
+
+
 def scrape_coming_and_announced():
     """
-    Usiamo xboxgamepasslist.com (un sito che non ci ha mai bloccato)
-    instradato tramite ZenRows per il rendering JavaScript, e una lettura
-    "senza struttura fissa": cerchiamo i link dei titoli dei giochi e la
-    prima data riconoscibile nel testo del loro contenitore piu' vicino,
-    invece di assumere una tabella HTML precisa.
+    Usiamo la guida di Pure Xbox (sito di notizie con una tabella
+    Data/Gioco/Piattaforma aggiornata regolarmente), instradata tramite
+    ZenRows. E' una pagina "normale" da sito di notizie, molto piu'
+    semplice da leggere in modo affidabile delle web-app complesse
+    provate in precedenza.
     """
-    games = fetch_xgpl_pages("COMING_SOON")
+    try:
+        soup = fetch_soup_direct(PUREXBOX_URL)
+        print("[coming] Richiesta semplice riuscita (senza ZenRows).")
+    except Exception as e:
+        print(f"[coming] Richiesta semplice fallita ({e}), riprovo con ZenRows...")
+        soup = fetch_soup(PUREXBOX_URL, js_render=True, antibot=True)
 
+    table = soup.find("table")
+    if table is None:
+        print("[coming] Nessuna tabella trovata nella pagina.")
+        return [], []
+
+    today = datetime.now(timezone.utc).replace(tzinfo=None)
     with_date = []
     announced = []
     seen = set()
-    today = datetime.now(timezone.utc).replace(tzinfo=None)
 
-    for game in games:
-        title = game["title"]
+    rows = table.find_all("tr")
+    print(f"[coming] Righe trovate nella tabella: {len(rows)}")
+
+    for row in rows:
+        cells = row.find_all(["td", "th"])
+        if len(cells) < 2:
+            continue
+
+        date_text = cells[0].get_text(strip=True)
+        title = cells[1].get_text(strip=True)
+
+        if not title or not date_text or not looks_like_game_title(title):
+            continue
         if title in seen:
             continue
         seen.add(title)
 
-        date_text = game["date_text"]
-        if date_text.upper() == "TBA":
+        if date_text.upper() == "TBD":
             announced.append({"title": title})
             continue
 
-        parsed = parse_xgpl_date(date_text)
-        if parsed:
-            # Il sito usa "Coming <data>" anche per giochi gia' usciti
-            # (probabilmente indica quando sono stati aggiunti, non
-            # quando arriveranno): scartiamo le date nel passato.
-            if parsed.date() < today.date():
-                continue
+        exact_date, approx_label = parse_purexbox_date(date_text, today.year)
+
+        if exact_date:
+            if exact_date.date() < today.date():
+                continue  # gia' uscito, non e' "in arrivo"
             with_date.append({
                 "title": title,
-                "exactDate": parsed.strftime("%Y-%m-%d"),
+                "exactDate": exact_date.strftime("%Y-%m-%d"),
             })
+        elif approx_label:
+            with_date.append({"title": title, "approxLabel": approx_label})
         else:
-            with_date.append({"title": title, "approxLabel": date_text})
+            announced.append({"title": title})
 
     print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
     return with_date, announced
+
 
 
 GAME_PASS_TAG_PATTERN = re.compile(r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$")
