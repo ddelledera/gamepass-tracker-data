@@ -93,30 +93,6 @@ COMING_STATUS_PATTERN = re.compile(
 )
 
 
-def find_nearest_date(link_tag):
-    """Risale i contenitori "genitori" del link del titolo, finche' non
-    trova il testo di stato specifico "Coming <data>" o "Coming TBA".
-    Ci fermiamo non appena il contenitore include anche altri link:
-    vorrebbe dire che abbiamo superato i confini della "scheda" di
-    questo singolo gioco e stiamo per leggere per errore la data di un
-    gioco vicino diverso nella pagina."""
-    node = link_tag
-    for _ in range(6):
-        node = node.parent
-        if node is None:
-            break
-
-        links_in_node = node.find_all("a", href=True)
-        distinct_hrefs = {a["href"] for a in links_in_node}
-        if len(distinct_hrefs) > 1:
-            break
-
-        text = node.get_text(" ", strip=True)
-        match = COMING_STATUS_PATTERN.search(text)
-        if match:
-            return match.group(1)
-    return None
-
 
 def parse_xgpl_date(text: str):
     text = text.strip().replace(",", "")
@@ -159,16 +135,23 @@ def extract_xgpl_games(soup):
     seen_titles = set()
 
     for link in soup.find_all("a"):
-        raw_title = link.get_text(strip=True)
-        title = clean_xgpl_title(raw_title)
+        raw_text = link.get_text(strip=True)
+        if not raw_text:
+            continue
 
+        # Cerchiamo lo stato "Coming <data>"/"Coming TBA" DIRETTAMENTE nel
+        # testo di questo stesso link: card e informazioni sono tutte
+        # concatenate insieme in un unico <a>, quindi non serve (ed è
+        # rischioso) risalire ai contenitori genitori.
+        status_match = COMING_STATUS_PATTERN.search(raw_text)
+        if status_match is None:
+            continue
+        date_text = status_match.group(1)
+
+        title = clean_xgpl_title(raw_text)
         if not title or title in seen_titles or not looks_like_game_title(title):
             continue
         if title.lower() in XGPL_NAV_NOISE:
-            continue
-
-        date_text = find_nearest_date(link)
-        if date_text is None:
             continue
 
         seen_titles.add(title)
