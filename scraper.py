@@ -451,6 +451,41 @@ CONFIRMED_2027_ANNOUNCED = [
 ]
 
 
+MONTH_YEAR_PATTERN = re.compile(
+    r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{4})",
+    re.IGNORECASE,
+)
+SEASON_TO_MONTH = {"spring": "04", "summer": "07", "fall": "10",
+                    "autumn": "10", "winter": "01"}
+
+
+def sort_key_for_entry(game):
+    """Calcola una chiave di ordinamento anche per le date approssimate
+    (es. "June 2026", "Spring 2027"), cosi' si intrecciano correttamente
+    con le date esatte invece di finire tutte in fondo alla lista."""
+    if game.get("exactDate"):
+        return game["exactDate"]
+
+    label = (game.get("approxLabel") or "").strip()
+
+    match = MONTH_YEAR_PATTERN.search(label)
+    if match:
+        month_num = datetime.strptime(match.group(1)[:3], "%b").month
+        return f"{match.group(2)}-{month_num:02d}-15"
+
+    for season, month in SEASON_TO_MONTH.items():
+        if season in label.lower():
+            year_match = re.search(r"\d{4}", label)
+            year = year_match.group(0) if year_match else "9999"
+            return f"{year}-{month}-15"
+
+    year_only = re.match(r"^\s*(\d{4})\s*$", label)
+    if year_only:
+        return f"{year_only.group(1)}-06-15"
+
+    return "9999-99-99"  # TBC, TBA e simili: in fondo alla lista
+
+
 def merge_curated_2027(with_date, announced):
     seen = {g["title"] for g in with_date} | {g["title"] for g in announced}
     for game in CONFIRMED_2027_WITH_DATE:
@@ -466,7 +501,7 @@ def merge_curated_2027(with_date, announced):
     # quelle approssimate (mese/anno) in fondo, nell'ordine in cui sono
     # arrivate. Cosi' l'ordine e' corretto gia' nel file salvato, senza
     # dipendere da come l'app lo gestisce.
-    with_date.sort(key=lambda g: g.get("exactDate") or "9999-99-99")
+    with_date.sort(key=sort_key_for_entry)
 
     return with_date, announced
 
