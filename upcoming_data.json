@@ -1,6 +1,10 @@
 {
-  "updatedAt": "2026-09-15T09:34:07.017460+00:00",
+  "updatedAt": "2026-09-15T10:28:01.387909+00:00",
   "upcomingWithDate": [
+    {
+      "title": "Vapor World: Over The Mind",
+      "approxLabel": "June 2026"
+    },
     {
       "title": "RuneScape: Dragonwilds",
       "exactDate": "2026-09-15"
@@ -62,6 +66,14 @@
       "exactDate": "2026-12-01"
     },
     {
+      "title": "Dumpster Gang",
+      "approxLabel": "December 2026"
+    },
+    {
+      "title": "There Are No Ghosts At The Grand",
+      "approxLabel": "December 2026"
+    },
+    {
       "title": "Stranger Than Heaven",
       "exactDate": "2027-01-15"
     },
@@ -72,18 +84,6 @@
     {
       "title": "Fable",
       "exactDate": "2027-02-23"
-    },
-    {
-      "title": "Vapor World: Over The Mind",
-      "approxLabel": "June 2026"
-    },
-    {
-      "title": "Dumpster Gang",
-      "approxLabel": "December 2026"
-    },
-    {
-      "title": "There Are No Ghosts At The Grand",
-      "approxLabel": "December 2026"
     },
     {
       "title": "JOIN US",
