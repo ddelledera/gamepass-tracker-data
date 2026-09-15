@@ -249,13 +249,21 @@ def scrape_coming_and_announced():
     print(f"[coming] Righe trovate nella tabella: {len(rows)}")
 
     for row in rows:
-        cells = row.find_all(["td", "th"])
+        # Scartiamo le righe di intestazione della tabella (celle <th>,
+        # o testo letterale "Date"/"Game" che a volte si ripete anche
+        # dentro il corpo della tabella per motivi di accessibilita').
+        if row.find("th") is not None:
+            continue
+
+        cells = row.find_all("td")
         if len(cells) < 2:
             continue
 
         date_text = cells[0].get_text(strip=True)
         title = cells[1].get_text(strip=True)
 
+        if date_text.lower() == "date" or title.lower() == "game":
+            continue
         if not title or not date_text or not looks_like_game_title(title):
             continue
         if title in seen:
@@ -453,6 +461,13 @@ def merge_curated_2027(with_date, announced):
         if game["title"] not in seen:
             announced.append(game)
             seen.add(game["title"])
+
+    # Ordiniamo cronologicamente: prima le date esatte (in ordine), poi
+    # quelle approssimate (mese/anno) in fondo, nell'ordine in cui sono
+    # arrivate. Cosi' l'ordine e' corretto gia' nel file salvato, senza
+    # dipendere da come l'app lo gestisce.
+    with_date.sort(key=lambda g: g.get("exactDate") or "9999-99-99")
+
     return with_date, announced
 
 
