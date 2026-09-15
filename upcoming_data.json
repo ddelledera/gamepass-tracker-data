@@ -1,14 +1,6 @@
 {
-  "updatedAt": "2026-09-15T08:40:53.434486+00:00",
+  "updatedAt": "2026-09-15T09:34:07.017460+00:00",
   "upcomingWithDate": [
-    {
-      "title": "Game",
-      "approxLabel": "Date"
-    },
-    {
-      "title": "Vapor World: Over The Mind",
-      "approxLabel": "June 2026"
-    },
     {
       "title": "RuneScape: Dragonwilds",
       "exactDate": "2026-09-15"
@@ -27,6 +19,10 @@
     },
     {
       "title": "Minecraft Dungeons 2",
+      "exactDate": "2026-09-29"
+    },
+    {
+      "title": "Minecraft Dungeons II",
       "exactDate": "2026-09-29"
     },
     {
@@ -66,18 +62,6 @@
       "exactDate": "2026-12-01"
     },
     {
-      "title": "Dumpster Gang",
-      "approxLabel": "December 2026"
-    },
-    {
-      "title": "There Are No Ghosts At The Grand",
-      "approxLabel": "December 2026"
-    },
-    {
-      "title": "Minecraft Dungeons II",
-      "exactDate": "2026-09-29"
-    },
-    {
       "title": "Stranger Than Heaven",
       "exactDate": "2027-01-15"
     },
@@ -88,6 +72,18 @@
     {
       "title": "Fable",
       "exactDate": "2027-02-23"
+    },
+    {
+      "title": "Vapor World: Over The Mind",
+      "approxLabel": "June 2026"
+    },
+    {
+      "title": "Dumpster Gang",
+      "approxLabel": "December 2026"
+    },
+    {
+      "title": "There Are No Ghosts At The Grand",
+      "approxLabel": "December 2026"
     },
     {
       "title": "JOIN US",
