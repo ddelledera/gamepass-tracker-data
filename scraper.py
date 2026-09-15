@@ -417,6 +417,45 @@ def scrape_leaving_soon():
     return unique_leaving[:20]
 
 
+# ============================================================
+# GIOCHI 2027 CONFERMATI: lista curata a mano.
+# Nessuna delle fonti automatiche testate arriva cosi' lontano nel
+# tempo in modo affidabile — ma sono pochi titoli che cambiano
+# raramente (circa un annuncio al mese), quindi ha senso mantenerli
+# qui a mano invece di inseguire un'altra fonte automatica.
+# Per aggiornarla: aggiungi/modifica una riga e basta, si unisce da
+# sola al resto dei dati ad ogni esecuzione.
+# ============================================================
+CONFIRMED_2027_WITH_DATE = [
+    {"title": "Stranger Than Heaven", "exactDate": "2027-01-15"},
+    {"title": "Persona 4 Revival", "exactDate": "2027-02-18"},
+    {"title": "Fable", "exactDate": "2027-02-23"},
+    {"title": "JOIN US", "approxLabel": "March 2027"},
+]
+CONFIRMED_2027_ANNOUNCED = [
+    {"title": "Clockwork Revolution"},
+    {"title": "State of Decay 3"},
+    {"title": "Senua"},
+    {"title": "Spyro: A Realm Beyond"},
+    {"title": "The Expanse: Osiris Reborn"},
+    {"title": "Wo Long 2: Wings of Ember"},
+    {"title": "Son of Thanjai"},
+]
+
+
+def merge_curated_2027(with_date, announced):
+    seen = {g["title"] for g in with_date} | {g["title"] for g in announced}
+    for game in CONFIRMED_2027_WITH_DATE:
+        if game["title"] not in seen:
+            with_date.append(game)
+            seen.add(game["title"])
+    for game in CONFIRMED_2027_ANNOUNCED:
+        if game["title"] not in seen:
+            announced.append(game)
+            seen.add(game["title"])
+    return with_date, announced
+
+
 def main():
     with_date, announced = [], []
     for attempt in range(1, 3):
@@ -428,6 +467,10 @@ def main():
             break
         print(f"[coming] Risultato vuoto al tentativo {attempt}, riprovo...")
         time.sleep(5)
+
+    with_date, announced = merge_curated_2027(with_date, announced)
+    print(f"[coming] Dopo l'aggiunta dei confermati 2027 — Con data: "
+          f"{len(with_date)}, Annunciati: {len(announced)}")
 
     leaving = []
     for attempt in range(1, 3):
