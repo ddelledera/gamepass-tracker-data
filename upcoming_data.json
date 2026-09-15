@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-15T07:33:28.709485+00:00",
+  "updatedAt": "2026-09-15T08:40:53.434486+00:00",
   "upcomingWithDate": [
     {
       "title": "Game",
@@ -76,6 +76,22 @@
     {
       "title": "Minecraft Dungeons II",
       "exactDate": "2026-09-29"
+    },
+    {
+      "title": "Stranger Than Heaven",
+      "exactDate": "2027-01-15"
+    },
+    {
+      "title": "Persona 4 Revival",
+      "exactDate": "2027-02-18"
+    },
+    {
+      "title": "Fable",
+      "exactDate": "2027-02-23"
+    },
+    {
+      "title": "JOIN US",
+      "approxLabel": "March 2027"
     }
   ],
   "upcomingAnnounced": [
@@ -168,6 +184,27 @@
     },
     {
       "title": "Aniimo"
+    },
+    {
+      "title": "Clockwork Revolution"
+    },
+    {
+      "title": "State of Decay 3"
+    },
+    {
+      "title": "Senua"
+    },
+    {
+      "title": "Spyro: A Realm Beyond"
+    },
+    {
+      "title": "The Expanse: Osiris Reborn"
+    },
+    {
+      "title": "Wo Long 2: Wings of Ember"
+    },
+    {
+      "title": "Son of Thanjai"
     }
   ],
   "leavingSoon": [
