@@ -176,42 +176,19 @@ def extract_xgpl_games(soup):
     return results
 
 
-def fetch_xgpl_pages(status_filter: str, extra_query: str = ""):
-    all_games = []
-    consecutive_link_less_pages = 0
+def fetch_xgpl_games():
+    """Una singola richiesta (la paginazione tramite ?page=N si e'
+    rivelata inutile: ogni pagina restituiva lo stesso contenuto)."""
+    url = f"{XGPL_BASE_URL}?status=COMING_SOON"
+    try:
+        soup = fetch_soup(url, js_render=True)
+    except Exception as e:
+        print(f"[coming-xgpl] Errore: {e}")
+        return []
 
-    for page in range(1, XGPL_MAX_PAGES + 1):
-        if page == 1:
-            url = f"{XGPL_BASE_URL}?status={status_filter}{extra_query}"
-        else:
-            url = f"{XGPL_BASE_URL}?status={status_filter}{extra_query}&page={page}"
-
-        try:
-            soup = fetch_soup(url, js_render=True)
-        except Exception as e:
-            print(f"[coming] Errore pagina {page}: {e}")
-            break
-
-        total_links = len(soup.find_all("a"))
-        games = extract_xgpl_games(soup)
-        print(f"[coming] Pagina {page}: {len(games)} giochi trovati "
-              f"({total_links} link totali sulla pagina).")
-        all_games.extend(games)
-
-        # Non ci fidiamo di riconoscere un pulsante "pagina successiva"
-        # specifico (potrebbe essere un'icona, non testo "Next"): ci
-        # fermiamo solo se la pagina risulta praticamente vuota per due
-        # volte di fila, segno che abbiamo superato l'ultima pagina vera.
-        if total_links < 10:
-            consecutive_link_less_pages += 1
-            if consecutive_link_less_pages >= 2:
-                break
-        else:
-            consecutive_link_less_pages = 0
-
-    return all_games
-
-    return all_games
+    games = extract_xgpl_games(soup)
+    print(f"[coming-xgpl] {len(games)} giochi trovati (fonte supplementare).")
+    return games
 
 
 def parse_purexbox_date(date_text: str, today_year: int):
@@ -303,7 +280,43 @@ def scrape_coming_and_announced():
         else:
             announced.append({"title": title})
 
-    print(f"[coming] Con data: {len(with_date)}, Annunciati: {len(announced)}")
+    print(f"[coming] Pure Xbox — Con data: {len(with_date)}, "
+          f"Annunciati: {len(announced)}")
+
+    # Fonte supplementare: xboxgamepasslist.com, per recuperare titoli
+    # che l'articolo Pure Xbox (specifico per il 2026) non copre, es.
+    # giochi gia' confermati per il 2027.
+    try:
+        xgpl_games = fetch_xgpl_games()
+    except Exception as e:
+        print(f"[coming-xgpl] Errore: {e}")
+        xgpl_games = []
+
+    for game in xgpl_games:
+        title = game["title"]
+        if title in seen:
+            continue  # gia' presente da Pure Xbox
+
+        date_text = game["date_text"]
+        if date_text.upper() == "TBA":
+            seen.add(title)
+            announced.append({"title": title})
+            continue
+
+        parsed = parse_xgpl_date(date_text)
+        if parsed is None:
+            continue
+        if parsed.date() < today.date():
+            continue  # gia' uscito
+
+        seen.add(title)
+        with_date.append({
+            "title": title,
+            "exactDate": parsed.strftime("%Y-%m-%d"),
+        })
+
+    print(f"[coming] Totale dopo la fusione — Con data: {len(with_date)}, "
+          f"Annunciati: {len(announced)}")
     return with_date, announced
 
 
