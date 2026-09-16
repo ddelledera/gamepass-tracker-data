@@ -1,13 +1,29 @@
 {
-  "updatedAt": "2026-09-15T11:07:22.788340+00:00",
+  "updatedAt": "2026-09-16T10:52:37.786885+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
       "approxLabel": "June 2026"
     },
     {
-      "title": "RuneScape: Dragonwilds",
-      "exactDate": "2026-09-15"
+      "title": "Marvel Cosmic Invasion",
+      "exactDate": "2026-09-16"
+    },
+    {
+      "title": "Routine",
+      "exactDate": "2026-09-16"
+    },
+    {
+      "title": "Ultimate Sheep Raccoon",
+      "exactDate": "2026-09-16"
+    },
+    {
+      "title": "Kernel Hearts",
+      "exactDate": "2026-09-17"
+    },
+    {
+      "title": "Ninja Gaiden 4",
+      "exactDate": "2026-09-17"
     },
     {
       "title": "Dune: Awakening",
@@ -22,12 +38,20 @@
       "exactDate": "2026-09-23"
     },
     {
+      "title": "Call of Duty: Black Ops 6",
+      "exactDate": "2026-09-25"
+    },
+    {
       "title": "Minecraft Dungeons 2",
       "exactDate": "2026-09-29"
     },
     {
       "title": "Minecraft Dungeons II",
       "exactDate": "2026-09-29"
+    },
+    {
+      "title": "Keeper",
+      "exactDate": "2026-10-02"
     },
     {
       "title": "Gears of War: E-Day",
@@ -177,9 +201,6 @@
     },
     {
       "title": "Witchbrook"
-    },
-    {
-      "title": "Aniimo"
     },
     {
       "title": "Clockwork Revolution"
