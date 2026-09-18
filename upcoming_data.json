@@ -1,17 +1,9 @@
 {
-  "updatedAt": "2026-09-17T11:00:24.240592+00:00",
+  "updatedAt": "2026-09-18T10:35:32.090383+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
       "approxLabel": "June 2026"
-    },
-    {
-      "title": "Kernel Hearts",
-      "exactDate": "2026-09-17"
-    },
-    {
-      "title": "Ninja Gaiden 4",
-      "exactDate": "2026-09-17"
     },
     {
       "title": "Dune: Awakening",
@@ -31,10 +23,6 @@
     },
     {
       "title": "Minecraft Dungeons 2",
-      "exactDate": "2026-09-29"
-    },
-    {
-      "title": "Minecraft Dungeons II",
       "exactDate": "2026-09-29"
     },
     {
@@ -59,6 +47,10 @@
     },
     {
       "title": "Beyond These Stars",
+      "exactDate": "2026-10-15"
+    },
+    {
+      "title": "Chained Beasts",
       "exactDate": "2026-10-15"
     },
     {
@@ -191,9 +183,6 @@
       "title": "Witchbrook"
     },
     {
-      "title": "Wo Long 2: Wings of Ember"
-    },
-    {
       "title": "Clockwork Revolution"
     },
     {
@@ -209,49 +198,11 @@
       "title": "The Expanse: Osiris Reborn"
     },
     {
+      "title": "Wo Long 2: Wings of Ember"
+    },
+    {
       "title": "Son of Thanjai"
     }
   ],
-  "leavingSoon": [
-    {
-      "title": "Commandos: Origins",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    },
-    {
-      "title": "Cricket 24",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    },
-    {
-      "title": "Cyberpunk 2077",
-      "tiers": "Game Pass Ultimate, Premium"
-    },
-    {
-      "title": "Dead Cells",
-      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
-    },
-    {
-      "title": "Deep Rock Galactic Survivor",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    },
-    {
-      "title": "Frostpunk 2",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    },
-    {
-      "title": "Mullet Madjack",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    },
-    {
-      "title": "Spiritfarer",
-      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
-    },
-    {
-      "title": "Superliminal",
-      "tiers": "PC Game Pass, Ultimate, Premium, Essential"
-    },
-    {
-      "title": "Train Sim World 5",
-      "tiers": "PC Game Pass, Ultimate, Premium"
-    }
-  ]
+  "leavingSoon": []
 }
