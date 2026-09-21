@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-20T10:38:57.590342+00:00",
+  "updatedAt": "2026-09-21T12:01:12.576486+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
@@ -35,6 +35,10 @@
     },
     {
       "title": "Echo Weaver",
+      "exactDate": "2026-10-08"
+    },
+    {
+      "title": "Neon Abyss 2",
       "exactDate": "2026-10-08"
     },
     {
@@ -136,9 +140,6 @@
     },
     {
       "title": "Manor Lords"
-    },
-    {
-      "title": "Neon Abyss 2"
     },
     {
       "title": "Nirvana Noir"
