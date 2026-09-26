@@ -1,13 +1,9 @@
 {
-  "updatedAt": "2026-09-25T11:10:16.554361+00:00",
+  "updatedAt": "2026-09-26T10:49:45.304918+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
       "approxLabel": "June 2026"
-    },
-    {
-      "title": "Call of Duty: Black Ops 6",
-      "exactDate": "2026-09-25"
     },
     {
       "title": "Minecraft Dungeons 2",
@@ -56,6 +52,10 @@
     {
       "title": "Gravhounds",
       "exactDate": "2026-11-02"
+    },
+    {
+      "title": "Thronefall",
+      "exactDate": "2026-11-11"
     },
     {
       "title": "Hela: Of Mice & Magic",
