@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-30T11:56:16.806145+00:00",
+  "updatedAt": "2026-10-01T12:27:37.720643+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
@@ -50,6 +50,10 @@
       "exactDate": "2026-11-02"
     },
     {
+      "title": "Football Manager 27",
+      "exactDate": "2026-11-10"
+    },
+    {
       "title": "Thronefall",
       "exactDate": "2026-11-11"
     },
@@ -83,6 +87,9 @@
     }
   ],
   "upcomingAnnounced": [
+    {
+      "title": "A Game About Digging A Hole Together"
+    },
     {
       "title": "Armatus"
     },
