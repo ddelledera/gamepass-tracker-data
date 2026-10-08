@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-07T12:40:11.179941+00:00",
+  "updatedAt": "2026-10-08T12:49:59.819558+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
@@ -10,8 +10,16 @@
       "exactDate": "2026-10-08"
     },
     {
+      "title": "Forever Ago",
+      "exactDate": "2026-10-08"
+    },
+    {
       "title": "Neon Abyss 2",
       "exactDate": "2026-10-08"
+    },
+    {
+      "title": "Battlefield 6",
+      "exactDate": "2026-10-13"
     },
     {
       "title": "Deep Dish Dungeon",
@@ -22,12 +30,16 @@
       "exactDate": "2026-10-13"
     },
     {
-      "title": "Beyond These Stars",
+      "title": "Bluey's Happy Snaps",
       "exactDate": "2026-10-15"
     },
     {
       "title": "Chained Beasts",
       "exactDate": "2026-10-15"
+    },
+    {
+      "title": "Beyond These Stars",
+      "exactDate": "2026-10-16"
     },
     {
       "title": "The Seance of Blake Manor",
@@ -42,7 +54,15 @@
       "exactDate": "2026-11-02"
     },
     {
+      "title": "Void/Breaker 1.0",
+      "exactDate": "2026-11-04"
+    },
+    {
       "title": "Football Manager 27",
+      "exactDate": "2026-11-10"
+    },
+    {
+      "title": "Warhammer Survivors",
       "exactDate": "2026-11-10"
     },
     {
@@ -92,16 +112,7 @@
       "title": "Awaysis"
     },
     {
-      "title": "Bluey's Happy Snaps"
-    },
-    {
       "title": "Bushiden"
-    },
-    {
-      "title": "Cities: Skylines 2"
-    },
-    {
-      "title": "DayZ: Badlands"
     },
     {
       "title": "Erosion"
@@ -110,13 +121,7 @@
       "title": "Escape Academy 2"
     },
     {
-      "title": "Forever Ago"
-    },
-    {
       "title": "Freestyle Football 2"
-    },
-    {
-      "title": "Grave Seasons"
     },
     {
       "title": "Harmonium: The Musical"
