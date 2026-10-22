@@ -1,13 +1,33 @@
 {
-  "updatedAt": "2026-10-21T11:13:10.158406+00:00",
+  "updatedAt": "2026-10-22T11:11:37.939072+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
       "approxLabel": "June 2026"
     },
     {
+      "title": "Dodo Duckie",
+      "exactDate": "2026-10-22"
+    },
+    {
+      "title": "Scramble Knights Online (Game Preview)",
+      "exactDate": "2026-10-26"
+    },
+    {
       "title": "The Seance of Blake Manor",
       "exactDate": "2026-10-27"
+    },
+    {
+      "title": "Final Fantasy VII Remake Intergrade",
+      "exactDate": "2026-10-29"
+    },
+    {
+      "title": "Mouthwashing",
+      "exactDate": "2026-10-29"
+    },
+    {
+      "title": "Plants vs. Zombies: Replanted",
+      "exactDate": "2026-10-29"
     },
     {
       "title": "Terrible Lizards",
@@ -16,6 +36,10 @@
     {
       "title": "Gravhounds",
       "exactDate": "2026-11-02"
+    },
+    {
+      "title": "Pit of Goblin",
+      "exactDate": "2026-11-03"
     },
     {
       "title": "Void/Breaker 1.0",
@@ -39,7 +63,11 @@
     },
     {
       "title": "Dumpster Gang",
-      "approxLabel": "December 2026"
+      "exactDate": "2026-12-03"
+    },
+    {
+      "title": "A Game About Digging A Hole Together",
+      "exactDate": "2026-12-04"
     },
     {
       "title": "There Are No Ghosts At The Grand",
@@ -64,9 +92,6 @@
   ],
   "upcomingAnnounced": [
     {
-      "title": "A Game About Digging A Hole Together"
-    },
-    {
       "title": "Armatus"
     },
     {
@@ -80,9 +105,6 @@
     },
     {
       "title": "Erosion"
-    },
-    {
-      "title": "Escape Academy 2"
     },
     {
       "title": "Freestyle Football 2"
@@ -116,9 +138,6 @@
     },
     {
       "title": "The Eternal Life Of Goldman"
-    },
-    {
-      "title": "Tropico 7"
     },
     {
       "title": "Vaunted"
