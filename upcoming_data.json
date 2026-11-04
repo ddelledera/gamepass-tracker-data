@@ -1,20 +1,32 @@
 {
-  "updatedAt": "2026-11-03T13:38:51.216544+00:00",
+  "updatedAt": "2026-11-04T13:47:43.382869+00:00",
   "upcomingWithDate": [
     {
       "title": "Vapor World: Over The Mind",
       "approxLabel": "June 2026"
     },
     {
-      "title": "Pit of Goblin",
-      "exactDate": "2026-11-03"
-    },
-    {
       "title": "Void/Breaker 1.0",
       "exactDate": "2026-11-04"
     },
     {
+      "title": "Escape Academy 2: Back 2 School",
+      "exactDate": "2026-11-05"
+    },
+    {
+      "title": "Firefighting Simulator: Ignite",
+      "exactDate": "2026-11-05"
+    },
+    {
+      "title": "MySims Cozy Bundle",
+      "exactDate": "2026-11-05"
+    },
+    {
       "title": "Football Manager 27",
+      "exactDate": "2026-11-10"
+    },
+    {
+      "title": "Tanuki: Pon's Summer",
       "exactDate": "2026-11-10"
     },
     {
@@ -22,8 +34,56 @@
       "exactDate": "2026-11-10"
     },
     {
+      "title": "Hope in the City",
+      "exactDate": "2026-11-11"
+    },
+    {
       "title": "Thronefall",
       "exactDate": "2026-11-11"
+    },
+    {
+      "title": "John Carpenter's Toxic Commando",
+      "exactDate": "2026-11-12"
+    },
+    {
+      "title": "Banjo Kazooie",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Banjo Tooie",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Banjo Kazooie: Nuts & Bolts",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Gears of War: Judgment",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Halo: Spartan Assault",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Perfect Dark",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Viva Piñata",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "Viva Piñata: Trouble In Paradise",
+      "exactDate": "2026-11-15"
+    },
+    {
+      "title": "PAW Patrol: Dino World",
+      "exactDate": "2026-11-17"
+    },
+    {
+      "title": "Arkheron",
+      "exactDate": "2026-11-27"
     },
     {
       "title": "Hela: Of Mice & Magic",
@@ -31,6 +91,10 @@
     },
     {
       "title": "Dumpster Gang",
+      "exactDate": "2026-12-03"
+    },
+    {
+      "title": "Freestyle Football 2",
       "exactDate": "2026-12-03"
     },
     {
@@ -75,9 +139,6 @@
       "title": "Erosion"
     },
     {
-      "title": "Freestyle Football 2"
-    },
-    {
       "title": "Harmonium: The Musical"
     },
     {
@@ -102,9 +163,6 @@
       "title": "Snap & Grab"
     },
     {
-      "title": "Tanuki Pon's Summer"
-    },
-    {
       "title": "The Eternal Life Of Goldman"
     },
     {
@@ -118,9 +176,6 @@
     },
     {
       "title": "Wildekin"
-    },
-    {
-      "title": "Witchbrook"
     },
     {
       "title": "Clockwork Revolution"
