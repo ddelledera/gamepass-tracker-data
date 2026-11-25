@@ -129,5 +129,38 @@
       "title": "Son of Thanjai"
     }
   ],
-  "leavingSoon": []
+  "leavingSoon": [
+    {
+      "title": "Aliens: Dark Descent",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Banishers: Ghosts of New Eden",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "DreamWorks Gabby’s Dollhouse: Ready to Party",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Generation Zero",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Kill It With Fire! 2",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Moving Out 2",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Star Trucker",
+      "exactDate": "2026-11-30"
+    },
+    {
+      "title": "Totally Reliable Delivery Service",
+      "exactDate": "2026-11-30"
+    }
+  ]
 }
