@@ -1,10 +1,10 @@
 """
 Script di aggiornamento automatico per Game Pass Tracker.
 
-Scarica le pagine di gg.deals con i giochi in arrivo/annunciati/in uscita
-da Xbox Game Pass, instradando le richieste tramite ZenRows (un servizio
-che risolve le protezioni anti-bot tipo Cloudflare) per aggirare il
-blocco che impediva le richieste dirette. Salva tutto in
+Scarica i giochi in arrivo e annunciati da Pure Xbox e XboxGamePassList.
+Per le uscite usa Xbox Wire e Pure Xbox, con richieste HTTP gratuite.
+ZenRows e' solo un fallback per le fonti dei giochi in arrivo, con un
+massimo di due richieste per esecuzione. Salva tutto in
 upcoming_data.json, letto direttamente dall'app Flutter.
 
 La chiave API di ZenRows viene letta dalla variabile d'ambiente
@@ -16,6 +16,7 @@ import json
 import os
 import re
 import time
+from urllib.parse import urljoin, urlparse
 from datetime import datetime, timezone
 
 import requests
@@ -23,6 +24,10 @@ from bs4 import BeautifulSoup
 
 ZENROWS_API_KEY = os.environ.get("ZENROWS_API_KEY", "")
 ZENROWS_ENDPOINT = "https://api.zenrows.com/v1/"
+ZENROWS_MAX_REQUESTS = 2  # 2 x 25 credits max per run
+zenrows_requests = 0
+XBOX_WIRE_TAG = "https://news.xbox.com/en-us/tag/xbox-game-pass/"
+PUREXBOX_NEWS = "https://www.purexbox.com/news/"
 
 COMING_URL = "https://gg.deals/subscription-news/the-list-of-all-games-coming-to-game-pass/"
 XGPL_BASE_URL = "https://www.xboxgamepasslist.com/"
@@ -48,9 +53,13 @@ def fetch_soup_direct(url: str) -> BeautifulSoup:
 
 
 def fetch_soup(url: str, js_render: bool = True, antibot: bool = False) -> BeautifulSoup:
+    global zenrows_requests
     if not ZENROWS_API_KEY:
         raise RuntimeError("ZENROWS_API_KEY non impostata.")
-
+    if zenrows_requests >= ZENROWS_MAX_REQUESTS:
+        raise RuntimeError("Limite ZenRows per esecuzione raggiunto.")
+    zenrows_requests += 1
+    print(f"[zenrows] Richiesta {zenrows_requests}/{ZENROWS_MAX_REQUESTS} verso {urlparse(url).hostname}")
     time.sleep(1)
     params = {
         "url": url,
@@ -63,8 +72,12 @@ def fetch_soup(url: str, js_render: bool = True, antibot: bool = False) -> Beaut
     if antibot:
         params["antibot"] = "true"
 
-    response = requests.get(ZENROWS_ENDPOINT, params=params, timeout=90)
-    response.raise_for_status()
+    try:
+        response = requests.get(ZENROWS_ENDPOINT, params=params, timeout=90)
+    except requests.RequestException:
+        raise RuntimeError("Richiesta ZenRows fallita (rete/timeout).") from None
+    if not response.ok:
+        raise RuntimeError(f"ZenRows HTTP {response.status_code}")
     return BeautifulSoup(response.text, "html.parser")
 
 
@@ -181,12 +194,17 @@ def fetch_xgpl_games():
     rivelata inutile: ogni pagina restituiva lo stesso contenuto)."""
     url = f"{XGPL_BASE_URL}?status=COMING_SOON"
     try:
-        soup = fetch_soup(url, js_render=True)
+        games = extract_xgpl_games(fetch_soup_direct(url))
+        if games:
+            print(f"[coming-xgpl] {len(games)} giochi, richiesta gratuita.")
+            return games
+    except Exception as e:
+        print(f"[coming-xgpl] Richiesta diretta fallita: {type(e).__name__}")
+    try:
+        games = extract_xgpl_games(fetch_soup(url, js_render=True))
     except Exception as e:
         print(f"[coming-xgpl] Errore: {e}")
         return []
-
-    games = extract_xgpl_games(soup)
     print(f"[coming-xgpl] {len(games)} giochi trovati (fonte supplementare).")
     return games
 
@@ -230,10 +248,12 @@ def scrape_coming_and_announced():
     """
     try:
         soup = fetch_soup_direct(PUREXBOX_URL)
+        if soup.find("table") is None:
+            raise ValueError("Tabella mancante nella risposta diretta")
         print("[coming] Richiesta semplice riuscita (senza ZenRows).")
     except Exception as e:
         print(f"[coming] Richiesta semplice fallita ({e}), riprovo con ZenRows...")
-        soup = fetch_soup(PUREXBOX_URL, js_render=True, antibot=True)
+        soup = fetch_soup(PUREXBOX_URL, js_render=True)
 
     table = soup.find("table")
     if table is None:
@@ -329,100 +349,139 @@ def scrape_coming_and_announced():
 
 
 
-GAME_PASS_TAG_PATTERN = re.compile(r"^(.*?)\s*\(([^)]*Game Pass[^)]*)\)\s*$")
+# Fonti gratuite per le uscite: Xbox Wire (ufficiale) e Pure Xbox.
+# Non usare ZenRows per le uscite: nessun retry a pagamento su GG.deals.
+WIRE_LINK = re.compile(r"^/en-us/(\d{4})/(\d{2})/(\d{2})/([^/]+)/?$")
+LEAVING_HEADING = re.compile(
+    r"^Leaving\s+([A-Za-z]+)\s+(\d{1,2})(?:,?\s+(\d{4}))?$", re.I
+)
+PLATFORM_SUFFIX = re.compile(r"\s*\(([^()]*)\)\s*$")
 
 
-def get_article_publish_date(soup):
-    meta_names = [
-        ("property", "article:published_time"),
-        ("property", "article:modified_time"),
-        ("name", "date"),
-    ]
-    for attr, value in meta_names:
-        tag = soup.find("meta", attrs={attr: value})
-        if tag and tag.get("content"):
-            try:
-                dt = datetime.fromisoformat(tag["content"].replace("Z", "+00:00"))
-                if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=timezone.utc)
-                return dt
-            except ValueError:
-                continue
+def departure_date(month, day, year, article_date):
+    """Interpreta il cambio d'anno degli annunci di dicembre."""
+    try:
+        month_num = datetime.strptime(month[:3].title(), "%b").month
+        resolved_year = int(year) if year else article_date.year
+        if not year and article_date.month == 12 and month_num == 1:
+            resolved_year += 1
+        return datetime(resolved_year, month_num, int(day)).date()
+    except (ValueError, TypeError):
+        return None
 
-    time_tag = soup.find("time")
-    if time_tag and time_tag.get("datetime"):
+
+def parse_wire_leaving(soup, article_date, today):
+    games = {}
+    for heading in soup.find_all(["h2", "h3", "h4"]):
+        match = LEAVING_HEADING.fullmatch(heading.get_text(" ", strip=True))
+        if not match:
+            continue
+        date = departure_date(*match.groups(), article_date)
+        if date is None or date < today:
+            continue
+        # Il primo elenco dopo il titolo, prima della prossima sezione.
+        for node in heading.find_all_next(["h2", "h3", "h4", "ul", "ol"]):
+            if node.name in ("h2", "h3", "h4"):
+                break
+            for item in node.find_all("li", recursive=False):
+                title = item.get_text(" ", strip=True)
+                suffix = PLATFORM_SUFFIX.search(title)
+                if suffix and re.search(r"\b(cloud|console|pc|handheld|xbox)\b",
+                                        suffix.group(1), re.I):
+                    title = title[:suffix.start()].strip()
+                if title and len(title) <= 150:
+                    games[title.casefold()] = {"title": title, "exactDate": date.isoformat()}
+            break
+    return list(games.values())
+
+
+def wire_leaving(today):
+    soup = fetch_soup_direct(XBOX_WIRE_TAG)
+    candidates = {}
+    for link in soup.find_all("a", href=True):
+        url = urlparse(urljoin(XBOX_WIRE_TAG, link["href"]))
+        if url.hostname != "news.xbox.com":
+            continue
+        match = WIRE_LINK.fullmatch(url.path)
+        if not match:
+            continue
+        year, month, day, slug = match.groups()
+        if "game-pass" not in slug or not (
+            re.search(r"wave[-_]\d", slug) or
+            "coming to xbox game pass" in link.get_text(" ", strip=True).lower()
+        ):
+            continue
         try:
-            dt = datetime.fromisoformat(time_tag["datetime"].replace("Z", "+00:00"))
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            return dt
+            published = datetime(int(year), int(month), int(day)).date()
         except ValueError:
-            pass
+            continue
+        if 0 <= (today - published).days <= 40:
+            candidates["https://news.xbox.com" + url.path] = published
+    for url, published in sorted(candidates.items(), key=lambda p: p[1], reverse=True)[:3]:
+        try:
+            games = parse_wire_leaving(fetch_soup_direct(url), published, today)
+        except Exception as exc:
+            print(f"[leaving-wire] {type(exc).__name__}")
+            continue
+        if games:
+            print(f"[leaving-wire] {len(games)} giochi: {url}")
+            return games
+    return []
 
-    return None
+
+def purexbox_leaving(today):
+    # Archivio del mese corrente, non le previsioni non confermate.
+    index_url = PUREXBOX_NEWS + today.strftime("%Y/%m")
+    soup = fetch_soup_direct(index_url)
+    candidates = {}
+    for link in soup.find_all("a", href=True):
+        url = urlparse(urljoin(index_url, link["href"]))
+        if url.hostname != "www.purexbox.com":
+            continue
+        match = re.fullmatch(r"/news/(\d{4})/(\d{2})/([^/]+)/?", url.path)
+        if not match or "-games-are-leaving-xbox-game-pass-" not in match.group(3):
+            continue
+        slug = match.group(3)
+        if "might" in slug:
+            continue
+        candidates["https://www.purexbox.com" + url.path] = ("-in-late-" in slug)
+    for url, _ in sorted(candidates.items(), key=lambda p: p[1], reverse=True)[:3]:
+        try:
+            article = fetch_soup_direct(url)
+        except Exception as exc:
+            print(f"[leaving-purexbox] {type(exc).__name__}")
+            continue
+        games = {}
+        for table in article.find_all("table"):
+            for row in table.find_all("tr"):
+                cells = row.find_all("td")
+                if len(cells) < 3:
+                    continue
+                date_text = cells[0].get_text(" ", strip=True)
+                match = re.fullmatch(r"([A-Za-z]+)\s+(\d{1,2})(?:,?\s+(\d{4}))?", date_text)
+                if not match:
+                    continue
+                date = departure_date(*match.groups(), today)
+                title = cells[1].get_text(" ", strip=True)
+                if date and date >= today and title and len(title) <= 150:
+                    games[title.casefold()] = {"title": title, "exactDate": date.isoformat()}
+        if games:
+            print(f"[leaving-purexbox] {len(games)} giochi: {url}")
+            return list(games.values())
+    return []
 
 
 def scrape_leaving_soon():
-    index_soup = fetch_soup(LEAVING_INDEX_URL)
-
-    candidate_links = []
-    for a in index_soup.find_all("a", href=True):
-        href = a["href"]
-        if "/subscription-news/" in href and (
-            "leav" in href.lower() or "losing" in href.lower()
-        ):
-            if href not in candidate_links:
-                candidate_links.append(href)
-
-    print(f"[leaving] Trovati {len(candidate_links)} link candidati.")
-    if not candidate_links:
-        return []
-
-    checked = []
-    for href in candidate_links[:5]:
-        full_url = "https://gg.deals" + href if href.startswith("/") else href
+    today = datetime.now(timezone.utc).date()
+    for source in (wire_leaving, purexbox_leaving):
         try:
-            candidate_soup = fetch_soup(full_url)
-        except Exception as e:
-            print(f"[leaving] Impossibile controllare {full_url}: {e}")
-            continue
-        pub_date = get_article_publish_date(candidate_soup)
-        print(f"[leaving] Candidato: {full_url} -> data: {pub_date}")
-        checked.append((pub_date, full_url, candidate_soup))
-
-    checked.sort(key=lambda item: item[0] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
-
-    if not checked:
-        return []
-
-    _, article_link, article_soup = checked[0]
-    print(f"[leaving] Uso l'articolo più recente: {article_link}")
-
-    leaving = []
-    for element in article_soup.find_all(["li", "p", "strong"]):
-        text = element.get_text(" ", strip=True)
-        match = GAME_PASS_TAG_PATTERN.match(text)
-        if not match:
-            continue
-
-        title = match.group(1).strip(" -–—:")
-        tiers = match.group(2).strip()
-
-        if not looks_like_game_title(title) or len(title.split()) > 8:
-            continue
-
-        leaving.append({"title": title, "tiers": tiers})
-
-    print(f"[leaving] Giochi riconosciuti tramite tag Game Pass: {len(leaving)}")
-
-    seen = set()
-    unique_leaving = []
-    for game in leaving:
-        if game["title"] not in seen:
-            seen.add(game["title"])
-            unique_leaving.append(game)
-
-    return unique_leaving[:20]
+            games = source(today)
+            if games:
+                return games
+        except Exception as exc:
+            print(f"[leaving] {source.__name__}: {type(exc).__name__}")
+    print("[leaving] Nessuna uscita futura verificabile dalle fonti gratuite.")
+    return []
 
 
 # ============================================================
@@ -507,31 +566,32 @@ def merge_curated_2027(with_date, announced):
 
 
 def main():
-    with_date, announced = [], []
-    for attempt in range(1, 3):
-        try:
-            with_date, announced = scrape_coming_and_announced()
-        except Exception as e:
-            print(f"Errore nello scraping 'coming/announced' (tentativo {attempt}): {e}")
-        if with_date or announced:
-            break
-        print(f"[coming] Risultato vuoto al tentativo {attempt}, riprovo...")
-        time.sleep(5)
+    today = datetime.now(timezone.utc).date().isoformat()
+    try:
+        with open("upcoming_data.json", encoding="utf-8") as f:
+            previous = json.load(f)
+    except (OSError, ValueError):
+        previous = {}
+
+    # Una sola procedura per fonte: niente ripetizioni di chiamate a pagamento.
+    try:
+        with_date, announced = scrape_coming_and_announced()
+    except Exception as exc:
+        print(f"[coming] Aggiornamento fallito: {type(exc).__name__}")
+        with_date, announced = [], []
+    if not (with_date or announced):
+        print("[coming] Mantengo i dati precedenti.")
+        with_date = [g for g in previous.get("upcomingWithDate", [])
+                     if not g.get("exactDate") or g["exactDate"] >= today]
+        announced = previous.get("upcomingAnnounced", [])
 
     with_date, announced = merge_curated_2027(with_date, announced)
-    print(f"[coming] Dopo l'aggiunta dei confermati 2027 — Con data: "
-          f"{len(with_date)}, Annunciati: {len(announced)}")
-
-    leaving = []
-    for attempt in range(1, 3):
-        try:
-            leaving = scrape_leaving_soon()
-        except Exception as e:
-            print(f"Errore nello scraping 'leaving soon' (tentativo {attempt}): {e}")
-        if leaving:
-            break
-        print(f"[leaving] Risultato vuoto al tentativo {attempt}, riprovo...")
-        time.sleep(5)
+    leaving = scrape_leaving_soon()
+    if not leaving:
+        # Conserva solo uscite precedentemente verificate e non ancora scadute.
+        leaving = [g for g in previous.get("leavingSoon", [])
+                   if g.get("exactDate") and g["exactDate"] >= today]
+        print(f"[leaving] Conservati {len(leaving)} dati precedenti non scaduti.")
 
     data = {
         "updatedAt": datetime.now(timezone.utc).isoformat(),
@@ -544,7 +604,9 @@ def main():
         json.dump(data, f, ensure_ascii=False, indent=2)
 
     print(f"Salvati: {len(with_date)} con data, {len(announced)} annunciati, "
-          f"{len(leaving)} in uscita.")
+          f"{len(leaving)} in uscita. ZenRows: {zenrows_requests} richieste.")
+
+
 
 
 if __name__ == "__main__":
